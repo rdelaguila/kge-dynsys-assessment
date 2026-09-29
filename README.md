@@ -42,7 +42,7 @@ tests/
 generate_tables.py
 README.md
 requirements.txt
-LICENSE
+
 ```
 
 ## Dependencies
