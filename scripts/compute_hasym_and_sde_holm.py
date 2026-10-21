@@ -1,10 +1,10 @@
 """H_asym determinism (Milestone C) and SDE: the HASym_DET_3 and
 HASym_SDE_REVIEW_3 families, recomputed from persisted per-seed pairs.
 
-Closeout review, 2026-09-26 (statistics integration pass) @rdelaguila
+Closeout review, 2026-09-26 (statistics integration pass).
 
 Two independent defects in the historical driver
-(src/experiments/run_c_h_asym_deterministic.py) motivated
+(src/experiments/run_c_h_asym_deterministic.py, commit 94aa267) motivated
 this script, per the review's own worked-out numbers:
 
   1. Its ``rank_biserial`` field is actually a sign-count index
@@ -64,6 +64,11 @@ from statistical_tests import (  # noqa: E402
     recompute_gradient_family as _recompute_gradient_family,
 )
 
+# Manuscript-printed values, kept here ONLY as a comparison target -- never
+# as an input to the computation above. Current manuscript reference
+# (KG_ODE_manuscrito_analisis_estadistico_integrado.tex) prints -0.236 for
+# codex-m (the genuine recomputed value); the -0.05 figure below is the
+# earlier, superseded printed value this diagnostic originally investigated.
 MANUSCRIPT_PRINTED_RANK_BISERIAL = {
     "FB15k-237": -0.60,
     "codex-m": -0.05,

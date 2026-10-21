@@ -25,6 +25,7 @@ Output:
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 import numpy as np
@@ -166,6 +167,8 @@ def main():
         try:
             cell = load_cell(ds, vt, n)
         except Exception as e:
+            if os.environ.get("CANONICAL_PERSIST_DIR"):  # canonical run: every panel cell is mandatory
+                raise
             print(f"  SKIP {ds}/{vt}/{n}: {e}")
             continue
         sweep = sweep_cell(cell)

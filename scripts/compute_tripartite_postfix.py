@@ -19,6 +19,7 @@ Usage (from repo root):
 from __future__ import annotations
 
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -35,19 +36,39 @@ DATASETS = ("FB15k-237", "codex-m", "WN18RR")
 KGE_MODELS = ("TransE", "DistMult", "MuRE", "ComplEx")
 
 
+def load_persisted_native_a2(ds: str):
+    """Native A2 set persisted by rerun_native_ode in the canonical run, or None."""
+    import gzip, os
+    root = os.environ.get("CANONICAL_PERSIST_DIR")
+    path = Path(root) / "detections" / ds / "native" / "native_rk4_50__A2.json.gz" if root else None
+    if path is None or not path.exists():
+        return None
+    with gzip.open(path, "rt") as f:
+        return {tuple(t) for t in json.load(f)["detected"]}
+
+
 def main() -> None:
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--datasets", nargs="+", default=list(DATASETS))
+    args = ap.parse_args()
     out_rows: list[dict] = []
     universal_consensus: dict[str, list[tuple[str, str, str]]] = {}
 
-    for ds in DATASETS:
+    for ds in args.datasets:
         t0 = time.time()
-        ode_res = rerun_native_ode(ds, n_steps=50)
-        ode_set: set[tuple[str, str, str]] = ode_res["detected_set"]
+        ode_set: set[tuple[str, str, str]] = load_persisted_native_a2(ds)
+        if ode_set is None:
+            if os.environ.get("CANONICAL_PERSIST_DIR"):  # canonical run: the persisted native A2 set is mandatory
+                raise SystemExit(f"{ds}: persisted native A2 set missing; run audit_phase2_E_rerun.py first")
+            ode_set = rerun_native_ode(ds, n_steps=50)["detected_set"]
 
         kge_sets: dict[str, set[tuple[str, str, str]]] = {}
         for kge in KGE_MODELS:
             kd = load_kge_detection(ds, kge)
             if kd is None:
+                if os.environ.get("CANONICAL_PERSIST_DIR"):  # canonical run: all four KGE sets are mandatory
+                    raise SystemExit(f"{ds}/{kge}/detections.json missing")
                 print(f"  [warn] {ds}/{kge}/detections.json missing — skipped")
                 continue
             # load_kge_detection returns a dict {(s,r,o): score} — every key
@@ -67,6 +88,10 @@ def main() -> None:
             if kge in kge_sets:
                 uc &= kge_sets[kge]
         universal_consensus[ds] = sorted(uc)
+        from canonical_persist import record_detection
+        for name, members in (("confirmed", confirmed), ("kge_only", fp_risk), ("a2_only", fn_risk),
+                              ("union_kge", union_kge), ("all_method", uc)):
+            record_detection("consensus", ds, "native_rk4_50", name, [], set(), members)
 
         row = {
             "dataset": ds,

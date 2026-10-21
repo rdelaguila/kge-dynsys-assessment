@@ -35,9 +35,12 @@ CACHE_ARCHIVE_DIR: Path = CACHE_DIR / "_archive"
 # ── Stage dependency graph ────────────────────────────────────────────────────
 # Maps each stage to the stages that must be satisfied before it can run.
 # Used by run_all.py to emit actionable error messages.
+# "tune" is never implied by another stage or alias: the packaged
+# .cache/hyperparams/ files are the fixed paper configurations, and tuning
+# runs only when requested explicitly with --stages tune.
 STAGE_DEPENDENCIES: dict = {
     "tune":                 [],
-    "native":               ["tune"],
+    "native":               [],
     "random_ablation":      ["native"],
     "logical_ablation":     ["native"],
     "explanations":         ["random_ablation", "logical_ablation"],
@@ -52,10 +55,10 @@ STAGE_DEPENDENCIES: dict = {
 # Note: bootstrap_validation is intentionally NOT in any alias group; it is
 # expensive and must be invoked explicitly.
 STAGE_ALIASES: dict = {
-    "all":      ["tune", "native", "random_ablation", "logical_ablation",
+    "all":      ["native", "random_ablation", "logical_ablation",
                  "explanations", "visualizations"],
     "ablation": ["random_ablation", "logical_ablation"],
-    "paper":    ["tune", "native", "random_ablation", "logical_ablation"],
+    "paper":    ["native", "random_ablation", "logical_ablation"],
 }
 
 # Canonical stage order (used for dry-run output and alias expansion ordering)

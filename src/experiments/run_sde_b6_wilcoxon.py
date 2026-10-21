@@ -5,9 +5,10 @@ Runs run_sde_pivot_v2.py for seeds 1..n_seeds with ``initialise_relations=True``
 the paired Wilcoxon signed-rank statistic with rank-biserial effect size, plus
 the canonical descriptive statistics.
 
-Output:
-  - progress/sde_b6_wilcoxon_WN18RR.json — full per-seed + aggregate result.
-  - progress/sde_b6_wilcoxon_WN18RR.md — human-readable summary.
+Output (every path carries the dataset name):
+  - progress/sde_b6_wilcoxon_<ds>.json — full per-seed + aggregate result.
+  - progress/sde_b6_wilcoxon_<ds>.md — human-readable summary.
+  - progress/sde_b6_<ds>_seed_<n>.json, logs/sde_b6_<ds>_seed_<n>.log — per seed.
 """
 
 from __future__ import annotations
@@ -26,14 +27,25 @@ from scipy.stats import wilcoxon
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
 
+def seed_paths(dataset: str, seed: int) -> dict:
+    """All per-seed paths; each one is namespaced by dataset."""
+    return {
+        "log": REPO_ROOT / "logs" / f"sde_b6_{dataset}_seed_{seed}.log",
+        "pivot_summary": REPO_ROOT / "progress" / f"sde_pivot_{dataset}_asymmetry_v2.json",
+        "seed_summary": REPO_ROOT / "progress" / f"sde_b6_{dataset}_seed_{seed}.json",
+    }
+
+
 def run_one_seed(seed: int, dataset: str, k: int, sigma: float, n_steps: int,
                  sample_size: int, level_pct: float) -> dict:
     """Run the v2 driver for one seed and read back its JSON summary."""
-    log_path = REPO_ROOT / "logs" / f"sde_b6_seed_{seed}.log"
-    summary_path = REPO_ROOT / "progress" / "sde_pivot_WN18RR_asymmetry_v2.json"
+    paths = seed_paths(dataset, seed)
+    log_path = paths["log"]
+    summary_path = paths["pivot_summary"]
+    log_path.parent.mkdir(parents=True, exist_ok=True)
 
     cmd = [
-        str(REPO_ROOT / ".venv" / "bin" / "python"),
+        sys.executable,
         "-u",
         str(REPO_ROOT / "src" / "experiments" / "run_sde_pivot_v2.py"),
         "--dataset", dataset,
@@ -55,8 +67,7 @@ def run_one_seed(seed: int, dataset: str, k: int, sigma: float, n_steps: int,
         summary = json.load(f)
 
     # Archive the per-seed JSON so the next iteration's write doesn't overwrite it.
-    seed_summary = REPO_ROOT / "progress" / f"sde_b6_WN18RR_seed_{seed}.json"
-    shutil.copy(summary_path, seed_summary)
+    shutil.copy(summary_path, paths["seed_summary"])
 
     f1_ref = summary["f1"]["ref"]["f1"]
     f1_zero = summary["f1"]["zero"]["f1"]

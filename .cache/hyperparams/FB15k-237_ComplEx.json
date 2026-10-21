@@ -1,0 +1,33 @@
+{
+  "_meta": {
+    "dataset": "FB15k-237",
+    "model": "ComplEx",
+    "tuned_at": "2026-10-18T11:23:46.489908+00:00",
+    "random_seed": 42,
+    "n_trials": 18,
+    "metric": "held_out_filtered_MRR_native_vocab",
+    "best_metric_value": 0.023287063464522362,
+    "runner_up_metric_value": 0.009985373355448246,
+    "split": {
+      "surface_size": 30000,
+      "surface_sampling_seed": 42,
+      "split_seed": 42,
+      "train_frac": 0.9,
+      "n_train": 27000,
+      "n_valid": 3000,
+      "train_valid_intersection": 0,
+      "train_sha256_16": "5ce65d67b18faad1",
+      "valid_sha256_16": "47ac1a782a1335a1",
+      "native_entities": 14541,
+      "native_relations": 237,
+      "native_positives_filtered": 310116,
+      "n_draws": 20,
+      "n_unique_candidates": 18
+    }
+  },
+  "best_params": {
+    "embedding_dim": 100,
+    "learning_rate": 0.005,
+    "negative_sampling": 50
+  }
+}

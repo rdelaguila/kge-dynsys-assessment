@@ -4,6 +4,7 @@ Integrated KG Debugging Framework
 Combines ODE and PyKEEN approaches with full comparison capabilities
 """
 
+import os
 import numpy as np
 import torch
 from typing import List, Dict, Tuple, Optional
@@ -153,7 +154,7 @@ class IntegratedKGDebugger:
             
             # Add antisymmetry (asymmetry) constraints — CRITICAL for detecting
             # inverse-triple violations (e.g. (B,_hypernym,A) where (A,_hypernym,B) ∈ G).
-            # AntisymmetryConstraint now contributes to a continuous
+            # [block7] AntisymmetryConstraint now contributes to a continuous
             # gradient force scaled by lambda_asym (separate from lambda_logic
             # which governs transitivity + symmetry). The `margin_asym` and
             # the runtime `disable_asymmetry` toggle (used by the
@@ -194,15 +195,19 @@ class IntegratedKGDebugger:
                 relations.add(t.relation)
 
             embedding_dim = self.config['ode_config']['embedding_dim']
+            # TEMP-FIX (uncommitted, stability-panel check only): sorted()
+            # iteration instead of raw set iteration, so the RNG-stream
+            # position assigned to each entity/relation no longer depends on
+            # PYTHONHASHSEED. Seed, distribution and draw count unchanged.
             embeddings = {
                 e: np.random.randn(embedding_dim) * 0.1
-                for e in entities
+                for e in sorted(entities)
             }
-            for r in relations:
+            for r in sorted(relations):
                 embeddings[r] = np.random.randn(embedding_dim) * 0.1
-            
+
             # Create ODE config
-            # lambda_asym + margin_asym carry the new asymmetry-as-
+            # [block7] lambda_asym + margin_asym carry the new asymmetry-as-
             # gradient knobs through to ODEConfig. lambda_asym defaults to
             # 1.0 to keep symmetry with the existing lambda_logic / lambda_data
             # defaults; setting it to 0.0 disables the asymmetry force at
@@ -217,7 +222,7 @@ class IntegratedKGDebugger:
                 rtol=self.config['ode_config'].get('rtol', 1e-3),
                 atol=self.config['ode_config'].get('atol', 1e-6),
                 method=self.config['ode_config'].get('method', 'RK4'),
-                device=self.config['ode_config'].get('device', 'mps' if torch.backends.mps.is_available() else 'cpu')
+                device=os.environ.get("KG_FORCE_DEVICE") or self.config['ode_config'].get('device', 'mps' if torch.backends.mps.is_available() else 'cpu')
             )
             
             # Initialize ODE system
@@ -260,7 +265,8 @@ class IntegratedKGDebugger:
             negative_sampling=self.config['pykeen_config'].get('negative_sampling')
         )
         
-        print(f"PyKEEN model trained: MRR = {metrics.get('mrr', 0.0):.4f}")
+        if metrics.get('mrr') is not None:
+            print(f"PyKEEN model trained: MRR = {metrics['mrr']:.4f}")
     
     def setup_constraints(self, triples: List[Triple]):
         """Setup constraint checker (used by both ODE and PyKEEN)"""
@@ -346,7 +352,7 @@ class IntegratedKGDebugger:
             #     progress/diagnostic_phase3/step2_fixes.md.
             #   - For symbolic_bonus != 500, modulo subtracted the wrong amount; the new
             #     formula is the only correct one. The CLI flag --symbolic-bonus was
-            #     added after the canonical run; the canonical run
+            #     added after the canonical run (commit 891fdf0); the canonical run
             #     therefore always used bonus=500, so published numbers are unaffected.
             # Pull the *effective* bonus from the detector (handles both
             # the user-pinned and the auto-calibrated cases). The
@@ -397,9 +403,13 @@ class IntegratedKGDebugger:
                 otsu_val, _ = cv2.threshold(data_normalized, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
                 real_threshold = x.min() + (otsu_val / 255.0) * (x.max() - x.min())
             else:
-                # Knee detection on the sorted energy curve, matching the
-                # configuration that produced the manuscript's published
-                # numbers. No parameters modified: curve='convex',
+                # [block-alfa-A2] Restore knee detection in the canonical
+                # pipeline. Algorithm-relevant lines copied verbatim from
+                # olds/root_scripts/fix_postprocessing.py:83-90 (the
+                # historical post-processing script that produced the
+                # manuscript v4 numbers per
+                # audit_archive/.../resultados_seccion4_post_rerun.md).
+                # No parameters modified: curve='convex',
                 # direction='decreasing', interp_method='polynomial'.
                 from kneed import KneeLocator
                 n = len(x)

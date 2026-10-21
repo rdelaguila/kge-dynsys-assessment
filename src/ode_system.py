@@ -1,5 +1,5 @@
 """
- ODE System for KG Debugging (PyTorch Version)
+Neural ODE System for KG Debugging (PyTorch Version)
 Core module that integrates KGE with differential equations
 """
 
@@ -26,7 +26,7 @@ class ODEConfig:
     lambda_data: float = 1.0   # Data/KGE loss weight
     lambda_logic: float = 1.0  # Logic gradient weight (transitivity + symmetry only, post-block7)
     lambda_reg: float = 0.1    # Regularization weight
-    # Antisymmetry as continuous gradient force, scaled by its own lambda_asym
+    # [block7] Antisymmetry as continuous gradient force, scaled by its own lambda_asym
     # (separate from lambda_logic). margin_asym is the hinge margin used inside
     # AntisymmetryConstraint.compute_gradient (default 1.0).
     lambda_asym: float = 1.0
@@ -81,12 +81,14 @@ class KGODESystem(nn.Module):
         super().__init__()
         self.config = config
         
-        # Setup Device
+        # Setup Device (KG_FORCE_DEVICE, e.g. "cpu", overrides the configured device)
+        import os as _os
+        requested = _os.environ.get("KG_FORCE_DEVICE") or config.device
         self.device = torch.device('cpu')
-        if torch.cuda.is_available() and config.device == 'cuda':
+        if torch.cuda.is_available() and requested == 'cuda':
             self.device = torch.device('cuda')
             print("🚀 ODE System initialized on CUDA")
-        elif torch.backends.mps.is_available() and config.device == 'mps':
+        elif torch.backends.mps.is_available() and requested == 'mps':
             self.device = torch.device('mps')
             print("🚀 ODE System initialized on MPS (Apple Silicon)")
         else:
@@ -152,7 +154,10 @@ class KGODESystem(nn.Module):
                 print(f"  - Vectorised constraint gradient: n_trans={self._vec_grad.n_trans} "
                       f"n_sym={self._vec_grad.n_sym} n_asym={self._vec_grad.n_asym}")
             except Exception as e:
-                print(f"  - WARNING: vectorised constraint gradient unavailable ({e}); "
+                import os as _os
+                if _os.environ.get("CANONICAL_PERSIST_DIR"):  # canonical run: never switch gradient path silently
+                    raise RuntimeError(f"vectorised constraint gradient unavailable: {type(e).__name__}: {e!r}") from e
+                print(f"  - WARNING: vectorised constraint gradient unavailable ({e!r}); "
                       f"falling back to scalar path")
                 self._vec_grad = None
 
@@ -235,7 +240,7 @@ class KGODESystem(nn.Module):
         return -self.config.lambda_logic * grad_E
 
     def compute_asym_forces(self, y: torch.Tensor) -> torch.Tensor:
-        """Compute forces from antisymmetry constraints, scaled by
+        """[block7] Compute forces from antisymmetry constraints, scaled by
         ``lambda_asym``. Mirrors the structure of ``compute_logic_forces`` but
         flows through the dedicated path on ConstraintChecker
         (``compute_asymmetry_gradient``), keeping antisymmetry decoupled from
@@ -287,7 +292,7 @@ class KGODESystem(nn.Module):
         if self.config.lambda_logic > 0:
             force_logic = self.compute_logic_forces(y)
 
-        # 3. Antisymmetry force — separate path, scaled by lambda_asym
+        # 3. [block7] Antisymmetry force — separate path, scaled by lambda_asym
         force_asym = torch.zeros_like(y)
         if self.config.lambda_asym > 0:
             force_asym = self.compute_asym_forces(y)

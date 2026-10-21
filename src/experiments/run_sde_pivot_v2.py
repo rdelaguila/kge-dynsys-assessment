@@ -33,7 +33,7 @@ Outputs under ``paper_results/<ds>/sde_pivot_v2/seed_<N>/{ref,zero}/``:
                          (extracted from the same KGODESystem post-integration).
   - ``eval_triples.json`` — (n_eval,) list of (s, r, o, is_violation).
 
-Aggregate at ``progress/sde_pivot_WN18RR_asymmetry_v2.{md,json}``.
+Aggregate at ``progress/sde_pivot_<ds>_asymmetry_v2.json``.
 """
 
 from __future__ import annotations
@@ -61,6 +61,10 @@ from run_all import (  # noqa: E402
     sample_triples,
 )
 from sde_system import KGSDESystem, compute_per_triple_variance  # noqa: E402
+
+
+def pivot_summary_path(dataset: str) -> Path:
+    return REPO_ROOT / "progress" / f"sde_pivot_{dataset}_asymmetry_v2.json"
 
 DEFAULT_SIGMA = 0.05  # from B.4
 DEFAULT_K = 10
@@ -333,7 +337,7 @@ def main():
     summary["delta_f1"] = float(delta_f1) if delta_f1 == delta_f1 else None
     summary["verdict"] = verdict
 
-    json_path = REPO_ROOT / "progress" / "sde_pivot_WN18RR_asymmetry_v2.json"
+    json_path = pivot_summary_path(args.dataset)
     json_path.write_text(json.dumps(summary, indent=2, default=str))
     print(f"\nVerdict: {verdict}", flush=True)
     print(f"Wrote {json_path}", flush=True)

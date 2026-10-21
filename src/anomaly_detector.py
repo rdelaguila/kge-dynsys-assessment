@@ -26,6 +26,14 @@ class AnomalyReport:
     cot_analysis: Dict = None
     plausibility_score: float = 0.0  # New: Logic vs Embedding agreement
     risk_assessment: str = "low"     # New: "false_positive_risk", "false_negative_risk", "confirmed"
+    # [phase2-section-B] Raw score components, exposed so weight-sensitivity
+    # analyses can recompute the weighted sum under alternative weights
+    # without re-integrating the ODE. Purely additive -- compute_triple_anomaly_score
+    # still returns the same aggregate it always did; these are populated
+    # alongside it in detect_all_anomalies and default to 0.0/0 for any other caller.
+    energy: float = 0.0
+    max_instability: float = 0.0
+    n_violations: int = 0
 
 
 class AnomalyDetector:
@@ -241,22 +249,37 @@ class AnomalyDetector:
     def compute_triple_anomaly_score(self, triple: Triple, instability_cache: Dict[str, float] = None) -> Tuple[float, List[str]]:
         """
         Compute overall anomaly score for a triple
-        
+
         Args:
             instability_cache: Optional pre-computed instability scores
-        
+
         Returns:
             (anomaly_score, anomaly_types)
         """
+        score, anomaly_types, _energy, _max_instability, _n_violations = \
+            self.compute_triple_score_components(triple, instability_cache)
+        return score, anomaly_types
+
+    def compute_triple_score_components(self, triple: Triple, instability_cache: Dict[str, float] = None) -> Tuple[float, List[str], float, float, int]:
+        """Same computation as ``compute_triple_anomaly_score``, but also
+        returns the raw pre-weight components (energy, max_instability,
+        n_violations) so callers can recompute the weighted sum under
+        alternative weights without re-integrating the ODE.
+        ``compute_triple_anomaly_score`` is now a thin wrapper around this
+        method; its return value is unchanged.
+
+        Returns:
+            (anomaly_score, anomaly_types, energy, max_instability, n_violations)
+        """
         anomaly_types = []
         score = 0.0
-        
+
         # 1. Energy contribution (add raw value, no hard threshold gating)
         energy = self.compute_triple_energy_contribution(triple)
         if energy > 0.05:  # Lower threshold for reporting type
             anomaly_types.append("high_energy")
         score += energy * 5.0  # Scale up energy to be comparable
-        
+
         # 2. Embedding instability (use cache if available)
         if instability_cache is not None:
             subject_instability = instability_cache.get(triple.subject, 0.0)
@@ -264,19 +287,20 @@ class AnomalyDetector:
         else:
             subject_instability = self.compute_embedding_instability(triple.subject)
             object_instability = self.compute_embedding_instability(triple.object)
-        
+
         max_instability = max(subject_instability, object_instability)
         if max_instability > 0.005:  # Lower threshold (0.005)
             anomaly_types.append("unstable_embeddings")
         score += max_instability * 100.0  # Scale up instability (it's usually small variance)
-        
+
         # 3. Constraint violations
         violations = self.compute_constraint_violation_score(triple)
+        n_violations = len(violations)
         if violations:
-            score += len(violations) * self.symbolic_bonus
+            score += n_violations * self.symbolic_bonus
             anomaly_types.extend(f"violates_{v}" for v in violations.keys())
-        
-        return score, anomaly_types
+
+        return score, anomaly_types, energy, max_instability, n_violations
     
     def detect_all_anomalies(self, 
                             top_k: int = 20,
@@ -310,8 +334,9 @@ class AnomalyDetector:
         
         print(f"\nAnalyzing {len(self.triples)} triples...")
         for triple in tqdm(self.triples, desc="Detecting anomalies", unit="triple"):
-            score, anomaly_types = self.compute_triple_anomaly_score(triple, instability_cache)
-            
+            score, anomaly_types, energy_component, max_instability_component, n_violations = \
+                self.compute_triple_score_components(triple, instability_cache)
+
             if score >= min_score:
                 # Generate basic explanation (no LLM - fast)
                 explanation = self._generate_explanation(triple, score, anomaly_types)
@@ -323,7 +348,7 @@ class AnomalyDetector:
                 confidence = min(score / 10.0, 1.0)
                 
                 # Calculate plausibility without LLM
-                energy = self.compute_triple_energy_contribution(triple)
+                energy = energy_component
                 has_violation = "violates_" in str(anomaly_types)
                 
                 if has_violation and energy > 1.0:
@@ -348,7 +373,10 @@ class AnomalyDetector:
                     suggested_action=action,
                     cot_analysis=None,  # Deferred to post-processing
                     plausibility_score=plausibility_score,
-                    risk_assessment=risk_assessment
+                    risk_assessment=risk_assessment,
+                    energy=energy_component,
+                    max_instability=max_instability_component,
+                    n_violations=n_violations,
                 )
                 reports.append(report)
         

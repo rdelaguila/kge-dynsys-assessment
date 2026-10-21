@@ -1,0 +1,34 @@
+{
+  "_meta": {
+    "dataset": "WN18RR",
+    "model": "DistMult",
+    "tuned_at": "2026-10-18T11:04:32.641209+00:00",
+    "random_seed": 42,
+    "n_trials": 6,
+    "metric": "held_out_filtered_MRR_native_vocab",
+    "best_metric_value": 0.11334656924009323,
+    "runner_up_metric_value": 0.1130325198173523,
+    "split": {
+      "surface_size": 20000,
+      "surface_sampling_seed": 42,
+      "split_seed": 42,
+      "train_frac": 0.9,
+      "n_train": 18000,
+      "n_valid": 2000,
+      "train_valid_intersection": 0,
+      "train_sha256_16": "572737eeeb467160",
+      "valid_sha256_16": "69945a4db0e94ff9",
+      "native_entities": 40943,
+      "native_relations": 11,
+      "native_positives_filtered": 93003,
+      "n_draws": 8,
+      "n_unique_candidates": 6
+    }
+  },
+  "best_params": {
+    "embedding_dim": 128,
+    "learning_rate": 0.001,
+    "negative_sampling": 20,
+    "margin": 2.0
+  }
+}

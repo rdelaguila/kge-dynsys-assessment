@@ -127,10 +127,10 @@ def load_kge_from_audit(ds, vtype, n):
 
 def load_f1_from_milestone(arch, ds, vtype, n):
     """Best-effort load of the post-fix F1 from the JSON the milestone wrote."""
-    # The milestone with A2 writes to post_fix_rerun; A1 overwrites with same path.
-    # We can't differentiate by arch in the metrics JSONs, so we only return the
-    # currently persisted F1 for the last-run arch. Mark as N/A if absent.
-    p = REPO_ROOT / "paper_results" / ds / "post_fix_rerun" / "metrics" / f"metrics_logical_{vtype}_{n}.json"
+    # The milestone writes A2 to post_fix_rerun/ and other architectures to
+    # post_fix_rerun_<arch>/. Mark as N/A if absent (A3 has no milestone run).
+    sub = "post_fix_rerun" if arch == "A2" else f"post_fix_rerun_{arch}"
+    p = REPO_ROOT / "paper_results" / ds / sub / "metrics" / f"metrics_logical_{vtype}_{n}.json"
     if not p.exists():
         return None
     d = json.loads(p.read_text())

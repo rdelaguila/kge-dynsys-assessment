@@ -128,7 +128,7 @@ def collect_random_f1(base_dir: Path, dataset: str, method: str) -> List[float]:
 def collect_logical_f1(base_dir: Path, dataset: str, vtype: str,
                        lambda_scope: str, method: str) -> List[float]:
     """Per-seed F1 list for a logical (vtype, lambda_scope) cell."""
-    # logical_lambda_asym_zero added for the H_asym Wilcoxon family
+    # [block7] logical_lambda_asym_zero added for the H_asym Wilcoxon family
     assert lambda_scope in (
         "logical_lambda_ref",
         "logical_lambda_zero",
@@ -430,7 +430,7 @@ def compute_wilcoxon_table(bootstrap_dir: Path) -> Dict:
         if ci_ode is not None:
             cis[f"{ds}/random/{ODE_METHOD_KEY}"] = ci_ode
 
-    # H_asym group: 8 paired tests (ODE λ_asym=ref vs ODE λ_asym=0
+    # [block7] H_asym group: 8 paired tests (ODE λ_asym=ref vs ODE λ_asym=0
     # in logical cells). Uses the same H2_CELLS exclusion of
     # (codex-m, transitivity). The sub-experiment data lives in
     # bootstrap/seed_<N>/logical_lambda_asym_zero/metrics/, written by the
@@ -583,17 +583,14 @@ def load_e6_kge_f1_by_seed(dataset: str, method: str,
     path component, taken as authoritative. Raises if the declared
     method is missing from any file rather than silently skipping it.
 
-    Reads from ``paper_results/<dataset>/bootstrap/`` -- the directory
-    ``run_all.py``'s own bootstrap_validation stage populates -- not the
-    historical ``bootstrap_r0_canonical`` snapshot, which has no
-    reproducing script and is therefore unavailable in a from-scratch
-    run. Verified numerically equivalent to ``bootstrap_r0_canonical``
-    for 87/90 (dataset, seed, method) cells checked; the remaining 3
-    (WN18RR/seed_1) differ by <0.3% absolute F1, consistent with the
-    ordinary run-to-run variance of an independently regenerated
-    snapshot rather than a methodological difference."""
+    Reads the archived ``bootstrap_r0_canonical/`` per-seed files when they
+    exist (they reproduce the published Appendix C.2 values), otherwise the
+    ``bootstrap/`` directory written by run_all.py's bootstrap_validation
+    stage in a fresh run."""
     root = repo_root or _default_repo_root()
-    base = root / "paper_results" / dataset / "bootstrap"
+    base = root / "paper_results" / dataset / "bootstrap_r0_canonical"
+    if not base.exists():
+        base = root / "paper_results" / dataset / "bootstrap"
     out: Dict[int, float] = {}
     for p in sorted(base.glob("seed_*/random/metrics/metrics_random_entity_swap_5.0.json")):
         seed_dir_name = p.parents[2].name  # "seed_<n>"

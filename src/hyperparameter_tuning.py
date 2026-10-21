@@ -8,8 +8,15 @@ import numpy as np
 from typing import Dict, List, Tuple
 from pathlib import Path
 import json
+import hashlib
 from pykeen_detector import PyKEENDetector
 from data import DataLoader, Triple
+
+
+def _triples_sha16(mapped) -> str:
+    a = np.ascontiguousarray(np.asarray(mapped, dtype=np.int64))
+    a = a[np.lexsort(a.T[::-1])]
+    return hashlib.sha256(a.tobytes()).hexdigest()[:16]
 
 
 class HyperparameterTuner:
@@ -124,7 +131,7 @@ class HyperparameterTuner:
         Tune hyperparameters for Neural ODE method
         Uses a validation split to evaluate MRR
 
-        Three sources of non-determinism in
+        [block-4-1 determinism patch] Three sources of non-determinism in
         the original implementation made the chosen lambdas non-reproducible
         across runs of the tuner:
           1. ``np.random.permutation`` for the train/valid split inherits
@@ -138,7 +145,7 @@ class HyperparameterTuner:
         trial seed forwarded to ``_run_ode_trial`` (which seeds numpy,
         torch, and the negative-sampler before doing any work).
 
-        After tuning, the full trial history
+        [block8 persistence patch] After tuning, the full trial history
         and the best MRR are stored on the tuner instance as
         ``self.last_trial_history`` and ``self.last_best_score`` so that
         drivers can persist them into the canonical cache (the
@@ -190,7 +197,7 @@ class HyperparameterTuner:
         print(f"Running {max_trials} trials in parallel...")
 
         # Parameter grid
-        # Extended per user spec D7+D11:
+        # [block7] Extended per user spec D7+D11:
         # - lambda_data widened with 0.5.
         # - lambda_logic widened to 8 values across two orders of magnitude
         #   (0.05..20.0) for better tuning quality on the post-block7
@@ -199,7 +206,7 @@ class HyperparameterTuner:
         # - lambda_asym + margin_asym are NEW (TASK 1 introduces them).
         # - t_span sampled from {(0,5), (0,10)} per prompt TASK 2 (vs
         #   the pre-block7 hardcoded (0,3)-then-restore-to-(0,5) shortcut).
-        # Drivers can override the grid wholesale via the
+        # [block8] Drivers can override the grid wholesale via the
         # ``param_grid_override`` arg. Required keys: lambda_data,
         # lambda_logic, lambda_asym, margin_asym, lambda_reg, rtol,
         # t_span, embedding_dim. Used by ``run_block8_landscape_search``
@@ -407,6 +414,177 @@ class HyperparameterTuner:
             ranks.append(1.0 / rank)
             
         return np.mean(ranks) if ranks else 0.0
+
+    # Historical fixed-budget random searches. TransE/DistMult/MuRE: the
+    # tune_for_dataset grid, 8 draws. ComplEx: the run_complex_retune.py grid,
+    # 20 draws, without `margin` (ComplEx trains with SoftplusLoss, passed
+    # explicitly in train_kge_trial, which takes no margin).
+    KGE_SEARCH = {
+        "ComplEx": ({"embedding_dim": [100, 200],
+                     "learning_rate": [5e-3, 1e-3, 5e-4, 1e-4],
+                     "negative_sampling": [10, 25, 50]}, 20),
+        "default": ({"embedding_dim": [100, 128],
+                     "learning_rate": [0.001, 0.0001],
+                     "margin": [1.0, 2.0],
+                     "negative_sampling": [10, 20]}, 8),
+    }
+
+    @classmethod
+    def kge_candidate_configs(cls, model_name: str, max_trials: int = None,
+                              seed: int = 42) -> Tuple[List[Dict], int]:
+        """Unique configs, in first-draw order, of the historical random search."""
+        grid, default_trials = cls.KGE_SEARCH.get(model_name, cls.KGE_SEARCH["default"])
+        n_draws = default_trials if max_trials is None else max_trials
+        rng = np.random.RandomState(seed)
+        configs = []
+        for _ in range(n_draws):
+            params = {
+                "embedding_dim": int(rng.choice(grid["embedding_dim"])),
+                "learning_rate": float(rng.choice(grid["learning_rate"])),
+                "negative_sampling": int(rng.choice(grid["negative_sampling"])),
+            }
+            if "margin" in grid:
+                params["margin"] = float(rng.choice(grid["margin"]))
+            if params not in configs:
+                configs.append(params)
+        return configs, n_draws
+
+    @staticmethod
+    def build_held_out_split(dataset_name: str, train_frac: float = 0.9,
+                             split_seed: int = 42) -> Dict:
+        """Deterministic 90/10 split of the historical tuning surface, mapped
+        onto the native dataset vocabulary.
+
+        The surface (paper_results/<ds>/hyperparam_subsample.npy) is reused,
+        never rebuilt; its size is dataset-specific (FB15k-237 30,000,
+        WN18RR 20,000, codex-m 25,000). The split is computed in the surface
+        id space (hence identical to the Phase A split and its hashes) and the
+        resulting triples are then re-indexed with the native entity/relation
+        mappings, so ranking runs over the full native vocabulary.
+        """
+        from pykeen.triples import TriplesFactory
+
+        repo_root = Path(__file__).resolve().parent.parent
+        idx_path = repo_root / "paper_results" / dataset_name / "hyperparam_subsample.npy"
+        meta_path = repo_root / "paper_results" / dataset_name / "hyperparam_subsample_meta.json"
+        if not idx_path.exists() or not meta_path.exists():
+            raise FileNotFoundError(
+                f"No hyperparam_subsample.npy/_meta.json for {dataset_name}. Build the "
+                "deterministic tuning subsets first: "
+                "python src/experiments/build_hyperparam_subsamples.py")
+        idxs = np.load(idx_path)
+        surface_seed = json.loads(meta_path.read_text()).get("sampling_seed")
+
+        all_triples = DataLoader().load_dataset(dataset_name)
+        native_tf = TriplesFactory.from_labeled_triples(np.array(
+            sorted({(t.subject, t.relation, t.object) for t in all_triples}), dtype=str))
+        surface_tf = TriplesFactory.from_labeled_triples(np.array(
+            [(all_triples[i].subject, all_triples[i].relation, all_triples[i].object)
+             for i in idxs], dtype=str))
+        train_s, valid_s = surface_tf.split([train_frac, 1.0 - train_frac],
+                                            random_state=split_seed)
+
+        def to_native(tf):
+            return TriplesFactory.from_labeled_triples(
+                tf.label_triples(tf.mapped_triples),
+                entity_to_id=native_tf.entity_to_id,
+                relation_to_id=native_tf.relation_to_id)
+
+        train_tf, valid_tf = to_native(train_s), to_native(valid_s)
+        train_set = {tuple(r) for r in train_tf.mapped_triples.tolist()}
+        valid_set = {tuple(r) for r in valid_tf.mapped_triples.tolist()}
+        info = {
+            "surface_size": int(len(idxs)),
+            "surface_sampling_seed": surface_seed,
+            "split_seed": split_seed,
+            "train_frac": train_frac,
+            "n_train": int(train_tf.num_triples),
+            "n_valid": int(valid_tf.num_triples),
+            "train_valid_intersection": len(train_set & valid_set),
+            "train_sha256_16": _triples_sha16(train_s.mapped_triples),
+            "valid_sha256_16": _triples_sha16(valid_s.mapped_triples),
+            "native_entities": int(native_tf.num_entities),
+            "native_relations": int(native_tf.num_relations),
+            "native_positives_filtered": int(native_tf.num_triples),
+        }
+        if info["train_valid_intersection"] != 0:
+            raise RuntimeError(f"Held-out split for {dataset_name} is not disjoint.")
+        if (train_s.num_triples, valid_s.num_triples) != (train_tf.num_triples, valid_tf.num_triples):
+            raise RuntimeError(f"Re-indexing onto the native vocabulary lost triples ({dataset_name}).")
+        return {"train_tf": train_tf, "valid_tf": valid_tf, "native_tf": native_tf, "info": info}
+
+    @staticmethod
+    def train_kge_trial(model_name: str, params: Dict, train_tf, testing_tf):
+        """Train one candidate on `train_tf` only (50 epochs, batch 128, seed 42, CPU)."""
+        from pykeen.pipeline import pipeline
+        kwargs = dict(
+            training=train_tf, testing=testing_tf, model=model_name,
+            model_kwargs=dict(embedding_dim=params["embedding_dim"]),
+            training_kwargs=dict(num_epochs=50, batch_size=128),
+            optimizer_kwargs=dict(lr=params["learning_rate"]),
+            negative_sampler_kwargs=dict(num_negs_per_pos=params["negative_sampling"]),
+            random_seed=42, device="cpu",
+        )
+        # pipeline() resolves loss=None to MarginRankingLoss, not to the model's
+        # loss_default, so ComplEx's SoftplusLoss is passed explicitly.
+        if model_name == "ComplEx":
+            kwargs["loss"] = "SoftplusLoss"
+        elif "margin" in params:
+            kwargs["loss_kwargs"] = dict(margin=params["margin"])
+        return pipeline(**kwargs)
+
+    @staticmethod
+    def held_out_filtered_mrr(model, valid_tf, native_tf) -> float:
+        """Filtered MRR on validation, ranked over the native vocabulary and
+        filtered with every native positive (which includes train and validation)."""
+        from pykeen.evaluation import RankBasedEvaluator
+        return float(RankBasedEvaluator(filtered=True).evaluate(
+            model=model, mapped_triples=valid_tf.mapped_triples,
+            additional_filter_triples=[native_tf.mapped_triples],
+            batch_size=128, use_tqdm=False).get_metric("mrr"))
+
+    def tune_kge_held_out(self, dataset_name: str, model_name: str,
+                          max_trials: int = None, train_frac: float = 0.9,
+                          split_seed: int = 42) -> Dict:
+        """KGE hyperparameter selection by held-out filtered MRR.
+
+        Separate from PyKEENDetector.train_model, whose transductive
+        fit-and-score-on-the-pool design (the detection path) is unchanged.
+        Each unique candidate of the historical random search is trained once
+        on the 90% split and scored on the 10% split, ranked over the native
+        vocabulary and filtered with all native positives. No anomaly labels,
+        F1 or thresholds are involved.
+        """
+        from pykeen.triples import TriplesFactory
+
+        split = self.build_held_out_split(dataset_name, train_frac, split_seed)
+        train_tf, valid_tf, native_tf = split["train_tf"], split["valid_tf"], split["native_tf"]
+        configs, n_draws = self.kge_candidate_configs(model_name, max_trials, split_seed)
+        # pipeline() always evaluates on `testing`; trained parameters do not
+        # depend on it, so a 1-triple probe avoids a redundant full evaluation.
+        probe_tf = TriplesFactory(mapped_triples=valid_tf.mapped_triples[:1],
+                                  entity_to_id=valid_tf.entity_to_id,
+                                  relation_to_id=valid_tf.relation_to_id)
+
+        trial_history = []
+        for i, params in enumerate(configs):
+            result = self.train_kge_trial(model_name, params, train_tf, probe_tf)
+            mrr = self.held_out_filtered_mrr(result.model, valid_tf, native_tf)
+            trial_history.append({"trial": i, "params": dict(params), "held_out_mrr": mrr})
+            print(f"  [held-out tune] {dataset_name}/{model_name} candidate {i+1}/{len(configs)}: "
+                  f"held_out_MRR={mrr:.4f} | {params}", flush=True)
+
+        ranked = sorted(trial_history, key=lambda t: -t["held_out_mrr"])
+        info = dict(split["info"], n_draws=n_draws, n_unique_candidates=len(configs))
+        self.last_trial_history = trial_history
+        self.last_split_info = info
+        return {
+            "best_params": dict(ranked[0]["params"]),
+            "best_held_out_mrr": ranked[0]["held_out_mrr"],
+            "runner_up_held_out_mrr": ranked[1]["held_out_mrr"] if len(ranked) > 1 else None,
+            "trial_history": trial_history,
+            "split_info": info,
+        }
 
     def get_ode_params(self, dataset_size: int) -> Dict:
         """Get default ODE parameters based on dataset size (Fallback)"""

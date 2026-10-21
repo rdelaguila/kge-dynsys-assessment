@@ -10,7 +10,6 @@ Includes standalone models (KGEs, ODE) and
 hybrid models (KGE + ODE) evaluated fairly against each other.
 Saves all metrics (Precision, Recall, F1), detections, and triggers
 visualizations and concluding analysis scripts.
-`visualization_generator is not part of this release.`
 """
 
 import argparse
@@ -30,7 +29,11 @@ from data import DataLoader, Triple
 from integrated_framework import IntegratedKGDebugger, IntegratedReport
 from ablation_study import KGPerturbator
 
-
+# Visualization generation is optional: it only affects PNG/PDF output,
+# never the persisted metrics/detections JSON that tables and statistics
+# read. Imported lazily so a distribution that omits
+# visualization_generator.py and plot_ablations.py still runs every
+# stage that produces published results.
 try:
     from visualization_generator import generate_dataset_visualizations
 except ImportError:
@@ -102,24 +105,41 @@ def get_constraint_config(dataset_name: str) -> Dict:
         }
 
 
+def stable_seed(seed: int, stream: str) -> int:
+    """Seed of an independent named RNG stream, stable across processes."""
+    import hashlib
+    digest = hashlib.sha256(f"{int(seed)}:{stream}".encode()).digest()
+    return int.from_bytes(digest[:8], "big") % (2 ** 31 - 1)
+
+
 def sample_triples(
     perturbed_triples: List[Triple],
     violation_set: Set[Tuple[str, str, str]],
     sample_size: int,
     seed: int = 42,
 ) -> Tuple[List[Triple], Set[Tuple[str, str, str]]]:
+    """Uniform evaluation sample of ``sample_size`` triples.
+
+    ``seed`` is the perturbation seed. The sample is drawn from the
+    independent stream ``stable_seed(seed, "evaluation")``: drawing it with
+    the perturbation seed itself made ``random.sample`` revisit the positions
+    chosen for perturbation, so the sample consisted of perturbed triples.
+    """
     import random as _random
-    rng = _random.Random(seed)
+    rng = _random.Random(stable_seed(seed, "evaluation"))
 
     if len(perturbed_triples) <= sample_size:
-        return perturbed_triples, violation_set
-        
-    sampled = rng.sample(perturbed_triples, sample_size)
+        sampled = list(perturbed_triples)
+    else:
+        sampled = rng.sample(perturbed_triples, sample_size)
     sampled_set = {(t.subject, t.relation, t.object) for t in sampled}
-    
+
     # Keep only the anomalies that actually appear in the sample
     sample_viol = violation_set.intersection(sampled_set)
-    
+
+    from canonical_persist import record_sample
+    record_sample(sampled, sample_viol, perturbation_seed=seed,
+                  evaluation_seed=stable_seed(seed, "evaluation"))
     return sampled, sample_viol
 
 
@@ -169,6 +189,16 @@ KGE_REQUIRED_KEYS = {"embedding_dim", "learning_rate", "margin", "negative_sampl
 ODE_REQUIRED_KEYS = {"lambda_data", "lambda_logic", "lambda_reg"}
 
 
+def expand_stages(raw_stages: List[str]) -> List[str]:
+    """Expand aliases and return stages in canonical order."""
+    expanded: List[str] = []
+    for s in raw_stages:
+        for sub in STAGE_ALIASES.get(s, [s]):
+            if sub not in expanded:
+                expanded.append(sub)
+    return [s for s in STAGE_ORDER if s in expanded]
+
+
 def _load_hyperparam_cache(dataset: str, model: str) -> Dict:
     """Load best_params from cache. Supports both new {_meta,best_params} and legacy flat format.
     Aborts with actionable error if cache is missing."""
@@ -176,13 +206,16 @@ def _load_hyperparam_cache(dataset: str, model: str) -> Dict:
     if not cache_path.exists():
         print(f"\n[native] ERROR: No hyperparameter cache found for {dataset}/{model}.")
         print(f"         Expected: {cache_path}")
-        print(f"         Run: python src/run_all.py --datasets {dataset} --stages tune")
-        print(f"         Or:  python src/run_all.py --datasets {dataset} --stages all")
+        print(f"         The fixed paper configurations ship in .cache/hyperparams/.")
+        print(f"         To tune a new dataset explicitly: "
+              f"python src/run_all.py --datasets {dataset} --stages tune")
         sys.exit(1)
     raw = json.loads(cache_path.read_text())
     params = raw.get("best_params", raw)  # support legacy flat format
     # Validate required keys
     required = ODE_REQUIRED_KEYS if model == "ode" else KGE_REQUIRED_KEYS
+    if model == "ComplEx":  # SoftplusLoss has no margin; the corrected tuner does not search it
+        required = required - {"margin"}
     missing = required - params.keys()
     if missing:
         print(f"[native] ERROR: Cache for {dataset}/{model} missing keys: {missing}")
@@ -265,23 +298,32 @@ def run_stage_tune(
             cp = CACHE_DIR / f"{dataset}_{model}.json"
             (missing if not cp.exists() else cached_models).append(model)
 
-        # Run tuner immediately for missing models (no prompt)
-        for model in missing:
-            print(f"[tune] No cache for {dataset}/{model}. Running search...")
-            if dataset not in triples_cache:
-                loader = DataLoader()
-                triples_cache[dataset] = loader.load_dataset(dataset)
-            triples = triples_cache[dataset]
-            if model == "ode":
-                bp = tuner.tune_ode(dataset, triples)
-            else:
-                bp = tuner.tune_for_dataset(dataset, triples, model)
+        def _run_search(model):
             meta = {
                 "dataset": dataset, "model": model,
                 "tuned_at": datetime.now(timezone.utc).isoformat(),
-                "random_seed": 42, "n_trials": 8,
-                "metric": "MRR_held_out", "best_metric_value": None,
+                "random_seed": 42,
             }
+            if model == "ode":
+                if dataset not in triples_cache:
+                    triples_cache[dataset] = DataLoader().load_dataset(dataset)
+                bp = tuner.tune_ode(dataset, triples_cache[dataset])
+                meta.update({"n_trials": 8, "metric": "MRR_held_out", "best_metric_value": None})
+                return bp, meta
+            res = tuner.tune_kge_held_out(dataset, model)
+            meta.update({
+                "n_trials": len(res["trial_history"]),
+                "metric": "held_out_filtered_MRR_native_vocab",
+                "best_metric_value": res["best_held_out_mrr"],
+                "runner_up_metric_value": res["runner_up_held_out_mrr"],
+                "split": res["split_info"],
+            })
+            return res["best_params"], meta
+
+        # Run tuner immediately for missing models (no prompt)
+        for model in missing:
+            print(f"[tune] No cache for {dataset}/{model}. Running search...")
+            bp, meta = _run_search(model)
             _write_hyperparam_cache(CACHE_DIR / f"{dataset}_{model}.json", bp, meta)
             print(f"[tune] Written {dataset}_{model}.json")
 
@@ -348,26 +390,12 @@ def run_stage_tune(
                 retune_models = []
 
         for model in retune_models:
-            if dataset not in triples_cache:
-                loader = DataLoader()
-                triples_cache[dataset] = loader.load_dataset(dataset)
-            triples = triples_cache[dataset]
             cache_path = CACHE_DIR / f"{dataset}_{model}.json"
             old_data = json.loads(cache_path.read_text())
             old_bp = old_data.get("best_params", old_data)
 
             print(f"[tune] Running search for {dataset}/{model}...")
-            if model == "ode":
-                new_bp = tuner.tune_ode(dataset, triples)
-            else:
-                new_bp = tuner.tune_for_dataset(dataset, triples, model)
-
-            meta = {
-                "dataset": dataset, "model": model,
-                "tuned_at": datetime.now(timezone.utc).isoformat(),
-                "random_seed": 42, "n_trials": 8,
-                "metric": "MRR_held_out", "best_metric_value": None,
-            }
+            new_bp, meta = _run_search(model)
             _write_hyperparam_cache(cache_path, new_bp, meta)
 
             # Post-tuning diff
@@ -449,13 +477,13 @@ class UnifiedExperimentRunner:
         self.resume = resume
         # [phase0] In-memory lambda_logic override — does NOT modify any cache file on disk.
         self.lambda_logic_override = lambda_logic_override
-        # In-memory lambda_asym override — same contract as
+        # [block7] In-memory lambda_asym override — same contract as
         # lambda_logic_override but for the asymmetry-as-gradient force.
         # Used by run_bootstrap_validation_stage's logical_lambda_asym_zero
         # sub-experiment (TASK 5) to neutralise the asymmetry contribution
         # without touching any cache file. Default None = use cache value.
         self.lambda_asym_override = lambda_asym_override
-        # symbolic_bonus=None → AnomalyDetector
+        # [block-alfa bonus-calibration] symbolic_bonus=None → AnomalyDetector
         # auto-calibrates per-dataset (q99 - q50 of pre-bonus score). Numeric
         # value pins the bonus and skips calibration (backward-compat).
         self.symbolic_bonus = symbolic_bonus
@@ -569,7 +597,7 @@ class UnifiedExperimentRunner:
             kge_config['pykeen_config']['model'] = kge
             kge_config['pykeen_config']['embedding_dim']       = cached_params['embedding_dim']
             kge_config['pykeen_config']['learning_rate']       = cached_params['learning_rate']
-            kge_config['pykeen_config']['margin']              = cached_params['margin']
+            kge_config['pykeen_config']['margin']              = cached_params.get('margin')  # None for ComplEx (SoftplusLoss)
             kge_config['pykeen_config']['negative_sampling']   = cached_params['negative_sampling']
             # epochs is not tuned — it is a protocol constant defined in src/config.py.
             kge_config['pykeen_config']['epochs'] = NATIVE_EPOCHS
@@ -653,7 +681,7 @@ class UnifiedExperimentRunner:
                 ode_config['use_ode'] = True
                 ode_config['use_pykeen'] = False
 
-                # Load tuned ODE hyperparameters from
+                # [block-4-3 fix] Load tuned ODE hyperparameters from
                 # .cache/hyperparams/<dataset>_ode.json — same cache contract
                 # the KGE branch above already honours via _load_hyperparam_cache.
                 # Without this, the native ODE silently uses
@@ -667,7 +695,7 @@ class UnifiedExperimentRunner:
                 ode_config['ode_config']['lambda_data']   = cached_ode['lambda_data']
                 ode_config['ode_config']['lambda_logic']  = cached_ode['lambda_logic']
                 ode_config['ode_config']['lambda_reg']    = cached_ode['lambda_reg']
-                # lambda_asym + margin_asym — new keys for the
+                # [block7] lambda_asym + margin_asym — new keys for the
                 # asymmetry-as-gradient force. Default to 1.0 if the cache
                 # predates block7 (backward-compat).
                 ode_config['ode_config']['lambda_asym']   = float(cached_ode.get('lambda_asym', 1.0))
@@ -685,7 +713,7 @@ class UnifiedExperimentRunner:
                 if self.lambda_logic_override is not None:
                     ode_config['ode_config']['lambda_logic'] = self.lambda_logic_override
                     print(f"  [lambda-override] lambda_logic overridden to {self.lambda_logic_override} (in-memory only)")
-                # same pattern for lambda_asym (logical_lambda_asym_zero condition)
+                # [block7] same pattern for lambda_asym (logical_lambda_asym_zero condition)
                 if self.lambda_asym_override is not None:
                     ode_config['ode_config']['lambda_asym'] = self.lambda_asym_override
                     print(f"  [lambda-override] lambda_asym overridden to {self.lambda_asym_override} (in-memory only)")
@@ -874,17 +902,23 @@ class UnifiedExperimentRunner:
                 # Evaluate ALL KGE models; select best by ablation F1 afterwards
                 for kge in self.kge_models:
                     print(f"  Evaluating KGE: {kge}...")
-                    params = self.trained_params.get(kge, {})
+                    # Tuned configuration from the cache; never fall back to built-in defaults.
+                    cached = _load_hyperparam_cache(self.dataset_name, kge)
+                    params = self.trained_params.get(kge) or cached
+                    for key in ('embedding_dim', 'learning_rate', 'negative_sampling', 'margin'):
+                        if key in cached and params.get(key) != cached[key]:
+                            raise RuntimeError(f"{self.dataset_name}/{kge}: native {key}={params.get(key)} "
+                                               f"differs from cache {cached[key]}")
                     config = IntegratedKGDebugger.get_default_config()
                     config['constraint_config'] = get_constraint_config(self.dataset_name)
                     config['use_ode'] = False
                     config['use_pykeen'] = True
                     config['pykeen_config'] = {
                         'model': kge,
-                        'embedding_dim': params.get('embedding_dim', 50),
-                        'learning_rate': params.get('learning_rate') or 0.01,
-                        'margin': params.get('margin') or 1.0,
-                        'negative_sampling': params.get('negative_sampling') or 5,
+                        'embedding_dim': cached['embedding_dim'],
+                        'learning_rate': cached['learning_rate'],
+                        'margin': cached.get('margin', 1.0),  # inert for ComplEx (SoftplusLoss)
+                        'negative_sampling': cached['negative_sampling'],
                         # ABLATION_EPOCHS < NATIVE_EPOCHS: hyperparams are already
                         # optimised; 10 epochs calibrates embeddings for detection.
                         'epochs': ABLATION_EPOCHS,
@@ -897,6 +931,13 @@ class UnifiedExperimentRunner:
                     det_set = {(r['triple'].subject, r['triple'].relation, r['triple'].object) for r in raw_d}
                     kge_detections[kge] = {t: d['score'] for d in raw_d for t in [(d['triple'].subject, d['triple'].relation, d['triple'].object)]}
                     scenario_results[kge] = compute_metrics(det_set, eval_viol, len(eval_triples))
+                    from canonical_persist import record_detection
+                    record_detection(output_subdir or "ablation", self.dataset_name,
+                                     f"{stage_type}_{v_type}_{val}_seed{perturbation_seed}", kge,
+                                     eval_triples, eval_viol, det_set, scores=kge_detections[kge],
+                                     threshold=getattr(debugger.pykeen_detector, '_last_otsu_threshold', None), operator="otsu",
+                                     params=config['pykeen_config'],
+                                     device=getattr(debugger.pykeen_detector, 'last_device', None))
 
                 # Select best KGE by ablation F1 (recall as tiebreaker, then list order)
                 best_kge = max(
@@ -926,7 +967,7 @@ class UnifiedExperimentRunner:
                     'lambda_data': params.get('lambda_data', 5.0),
                     'lambda_logic': params.get('lambda_logic', 1.0),
                     'lambda_reg': params.get('lambda_reg', 0.1),
-                    # lambda_asym + margin_asym propagate the new
+                    # [block7] lambda_asym + margin_asym propagate the new
                     # asymmetry-as-gradient knobs through ablation re-runs.
                     'lambda_asym': params.get('lambda_asym', 1.0),
                     'margin_asym': params.get('margin_asym', 1.0),
@@ -938,11 +979,11 @@ class UnifiedExperimentRunner:
                 if self.lambda_logic_override is not None:
                     config['ode_config']['lambda_logic'] = self.lambda_logic_override
                     print(f"  [lambda-override] lambda_logic overridden to {self.lambda_logic_override} (in-memory only)")
-                # same pattern for lambda_asym (logical_lambda_asym_zero condition)
+                # [block7] same pattern for lambda_asym (logical_lambda_asym_zero condition)
                 if self.lambda_asym_override is not None:
                     config['ode_config']['lambda_asym'] = self.lambda_asym_override
                     print(f"  [lambda-override] lambda_asym overridden to {self.lambda_asym_override} (in-memory only)")
-                # Pass symbolic_bonus to
+                # [block-alfa bonus-calibration] Pass symbolic_bonus to
                 # AnomalyDetector via config dict. None → auto-calibrate per
                 # dataset; numeric → pin (user override). Logged at the
                 # detector level (anomaly_detector.py:__init__).
@@ -958,6 +999,12 @@ class UnifiedExperimentRunner:
                 det_set = {(r['triple'].subject, r['triple'].relation, r['triple'].object) for r in raw_d}
                 ode_detections = {t: d['score'] for d in raw_d for t in [(d['triple'].subject, d['triple'].relation, d['triple'].object)]}
                 scenario_results['KG-Debug-ODE'] = compute_metrics(det_set, eval_viol, len(eval_triples))
+                from canonical_persist import record_detection
+                record_detection(output_subdir or "ablation", self.dataset_name,
+                                 f"{stage_type}_{v_type}_{val}_seed{perturbation_seed}", "run_all_ODE",
+                                 eval_triples, eval_viol, det_set, scores=ode_detections,
+                                 operator="top_k", params=config['ode_config'],
+                                 device=str(getattr(getattr(debugger, 'ode_system', None), 'device', None)))
 
                 # [phase3-step2-fix2] ODE-pure: subset of ODE detections whose anomaly_score
                 # received a contribution from the dynamical signal (energy or instability),
@@ -1046,13 +1093,13 @@ class UnifiedExperimentRunner:
             <base_dir>/bootstrap/seed_<N>/random/metrics/...
             <base_dir>/bootstrap/seed_<N>/logical_lambda_ref/metrics/...
             <base_dir>/bootstrap/seed_<N>/logical_lambda_zero/metrics/...
-            <base_dir>/bootstrap/seed_<N>/logical_lambda_asym_zero/metrics/... 
+            <base_dir>/bootstrap/seed_<N>/logical_lambda_asym_zero/metrics/... [block7]
 
         Methods bootstrapped: ODE, TransE, DistMult, MuRE. Any other KGE
         (e.g. ComplEx) is excluded for this stage only — usage flags are
         restored on exit.
 
-        Adds the fourth sub-experiment ``logical_lambda_asym_zero``,
+        [block7] Adds the fourth sub-experiment ``logical_lambda_asym_zero``,
         which overrides ``lambda_asym=0`` at inference (keeping
         ``lambda_logic`` at its tuned ref value). This is the H_asym
         causal counterfactual: F1[ODE | lambda_asym=ref] vs
@@ -1121,7 +1168,7 @@ class UnifiedExperimentRunner:
                     output_subdir=f"{seed_root}/logical_lambda_zero",
                 )
 
-                # Logical ablation @10%, λ_asym=0 (H_asym condition)
+                # [block7] Logical ablation @10%, λ_asym=0 (H_asym condition)
                 self.lambda_logic_override = saved_lambda_override
                 self.lambda_asym_override = 0.0
                 self.run_ablation_stage(
@@ -1185,10 +1232,10 @@ Stage aliases:
   paper    = tune native random_ablation logical_ablation
 
 Examples:
-  python src/run_all.py --datasets fb15k-237 --stages all
-  python src/run_all.py --datasets fb15k-237 --stages all --no-interactive
-  python src/run_all.py --datasets fb15k-237 --stages tune --force-tune
-  python src/run_all.py --datasets fb15k-237 --stages all --dry-run
+  python src/run_all.py --datasets FB15k-237 --stages paper
+  python src/run_all.py --datasets FB15k-237 --stages paper --no-interactive
+  python src/run_all.py --datasets FB15k-237 --stages tune --force-tune
+  python src/run_all.py --datasets FB15k-237 --stages paper --dry-run
 
 New flags (phase 0 — all defaults reproduce pre-patch behaviour):
   --seed N                    Set global random seed (default: 42)
@@ -1197,7 +1244,7 @@ New flags (phase 0 — all defaults reproduce pre-patch behaviour):
 """
     )
     parser.add_argument("--datasets", nargs="+", default=["WN18RR"],
-                        help="Datasets to run (fb15k-237, codex-m, WN18RR, ...)")
+                        help="Datasets to run (FB15k-237, codex-m, WN18RR; case-sensitive)")
     parser.add_argument("--all-datasets", action="store_true",
                         help="Run all three paper datasets")
     parser.add_argument("--methods", nargs="+",
@@ -1217,6 +1264,8 @@ New flags (phase 0 — all defaults reproduce pre-patch behaviour):
                         help="Skip models/stages that already have result files")
     parser.add_argument("--force-tune", action="store_true",
                         help="Re-run hyperparameter search (requires typing 'regenerate')")
+    parser.add_argument("--skip-postprocess", action="store_true",
+                        help="Do not run the end-of-run visualizations and LLM conclusions drafting.")
     parser.add_argument("--no-interactive", action="store_true",
                         help="Batch mode: keep existing cache, skip all prompts")
     parser.add_argument("--dry-run", action="store_true",
@@ -1276,23 +1325,11 @@ New flags (phase 0 — all defaults reproduce pre-patch behaviour):
 
     # Dataset selection
     if args.all_datasets:
-        datasets = ["fb15k-237", "codex-m", "WN18RR"]
+        datasets = ["FB15k-237", "codex-m", "WN18RR"]
     else:
         datasets = args.datasets
 
-    # Expand stage aliases
-    raw_stages: List[str] = args.stages
-    expanded: List[str] = []
-    for s in raw_stages:
-        if s in STAGE_ALIASES:
-            for sub in STAGE_ALIASES[s]:
-                if sub not in expanded:
-                    expanded.append(sub)
-        else:
-            if s not in expanded:
-                expanded.append(s)
-    # Preserve canonical ordering
-    stages = [s for s in STAGE_ORDER if s in expanded]
+    stages = expand_stages(args.stages)
 
     # --dry-run: print and exit
     if args.dry_run:
@@ -1408,7 +1445,10 @@ New flags (phase 0 — all defaults reproduce pre-patch behaviour):
                     print(f"   To resume: {resume_cmd}")
                 sys.exit(1)
 
-    # Visualizations & conclusions are always attempted at the end
+    # Visualizations & conclusions are attempted at the end unless --skip-postprocess
+    # (the canonical rerun builds figures only after tables are locked and runs no LLM drafting).
+    if args.skip_postprocess:
+        return
     if "visualizations" not in stages:
         trigger_visualizations(datasets)
     trigger_conclusions(datasets)

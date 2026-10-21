@@ -38,7 +38,7 @@ Output (new file, does not overwrite the historical artefact):
   progress/e6_triviality_gap_reconstructed.json
 
 Historical regression reference (progress/postfix_trivialitygap_bootstrap.json,
-is loaded and diffed against this reconstruction's own
+commit 35a1f7b) is loaded and diffed against this reconstruction's own
 p_raw/p_holm/rank_biserial per cell; first divergence is reported, not
 silently resolved in either direction.
 """
@@ -119,6 +119,10 @@ if __name__ == "__main__":
         json.dump(result, f, indent=2)
     print(f"Wrote {out_path}")
 
+    if not (REPO_ROOT / "progress" / "postfix_trivialitygap_bootstrap.json").exists():
+        # canonical clean root: no historical outputs to compare against
+        print("Historical reference progress/postfix_trivialitygap_bootstrap.json absent; comparison skipped.")
+        raise SystemExit(0)
     comparison = compare_to_historical(result)
     n_mismatch = sum(1 for d in comparison if not d.get("p_holm_match", False))
     print(f"Comparison vs historical (progress/postfix_trivialitygap_bootstrap.json): "

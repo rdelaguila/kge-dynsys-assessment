@@ -30,6 +30,11 @@ class PyKEENDetector:
     def __init__(self, embedding_dim: int = 50, device: str = None):
         self.embedding_dim = embedding_dim
         
+        # KG_FORCE_DEVICE (e.g. "cpu") overrides auto-detection: MPS training is not
+        # bitwise reproducible run to run, so the canonical rerun forces CPU.
+        import os as _os
+        if device is None and _os.environ.get("KG_FORCE_DEVICE"):
+            device = _os.environ["KG_FORCE_DEVICE"]
         # Auto-detect best available device
         if device is None:
             if torch.backends.mps.is_available():
@@ -53,8 +58,16 @@ class PyKEENDetector:
                    model_name: str = "TransE",
                    epochs: int = 100,
                    batch_size: int = 32,
+                   in_sample_eval: bool = False,
                    **kwargs) -> Dict:
-        """Train PyKEEN model on triples"""
+        """Train PyKEEN model on triples.
+
+        ``in_sample_eval=False`` (default) skips the two post-training link-prediction
+        evaluations on the training pool (pipeline's ``testing`` pass and the explicit
+        RankBasedEvaluator pass). Their in-sample MRR is not used for selection, scoring,
+        thresholding or detection; trained parameters are unaffected because both run
+        after training. ``True`` restores the historical behaviour.
+        """
         try:
             from pykeen.pipeline import pipeline
             from pykeen.triples import TriplesFactory
@@ -73,10 +86,16 @@ class PyKEENDetector:
                 print(f"⚠️ Switching to CPU for {model_name} (Complex operations not fully supported on MPS)")
                 device_to_use = 'cpu'
 
+            self.last_device = device_to_use  # actual training device (ComplEx/RotatE fall back to CPU)
             # Train model
+            # pipeline() always evaluates on `testing`; a 1-triple probe makes that pass
+            # negligible unless the in-sample evaluation is requested.
+            testing_tf = self.tf if in_sample_eval else TriplesFactory(
+                mapped_triples=self.tf.mapped_triples[:1], entity_to_id=self.tf.entity_to_id,
+                relation_to_id=self.tf.relation_to_id)
             result = pipeline(
                 training=self.tf,
-                testing=self.tf,  # Use same set for testing in this context
+                testing=testing_tf,
                 model=model_name,
                 model_kwargs=dict(
                     embedding_dim=int(self.embedding_dim),
@@ -91,9 +110,13 @@ class PyKEENDetector:
                 negative_sampler_kwargs=dict(
                     num_negs_per_pos=kwargs.get('negative_sampling', 5)
                 ) if 'negative_sampling' in kwargs else None,
+                # pipeline() resolves loss=None to MarginRankingLoss, not to the
+                # model's loss_default, so ComplEx's SoftplusLoss is passed explicitly
+                # (margin is not a SoftplusLoss parameter).
+                loss='SoftplusLoss' if model_name == 'ComplEx' else None,
                 loss_kwargs=dict(
                     margin=kwargs.get('margin', 1.0)
-                ) if 'margin' in kwargs else None,
+                ) if 'margin' in kwargs and model_name != 'ComplEx' else None,
                 random_seed=42,
                 device=device_to_use
             )
@@ -109,6 +132,11 @@ class PyKEENDetector:
             }
             
             # Evaluate if possible
+            if not in_sample_eval:
+                metrics['mrr'] = None
+                metrics['hits@10'] = None
+                print("Training complete (in-sample link-prediction evaluation skipped).")
+                return metrics
             try:
                 from pykeen.evaluation import RankBasedEvaluator
                 evaluator = RankBasedEvaluator()
@@ -433,7 +461,7 @@ class PyKEENDetector:
     def detect_neighborhood_anomalies(self, triples: List[Triple]) -> List[PyKEENAnomalyReport]:
         """Detect anomalies based on neighborhood-embedding variance.
 
-        The historical implementation hardcoded
+        [block-alfa neighborhood-fix] The historical implementation hardcoded
         ``avg_variance > 5.0`` as the inconsistency threshold. KGE methods
         produce embeddings on very different magnitude scales — empirically:
 
@@ -579,7 +607,7 @@ class PyKEENDetector:
             methods = ['ranking', 'neighborhood', 'constraints']
 
         all_reports = {}
-        # Per-detector contribution sets, kept
+        # [block-alfa kge-audit, KA.2] Per-detector contribution sets, kept
         # as Python sets so we can compute pairwise/triple intersections after
         # the merges complete. Purely additive instrumentation — does not
         # affect detect_all_anomalies's return value or merge semantics.
@@ -663,7 +691,7 @@ class PyKEENDetector:
         print(f"  - Constraints: {sum(1 for r in final_reports if 'constraint_violation' in r.anomaly_types)}")
         print(f"  - Latent: {sum(1 for r in final_reports if 'latent_violation' in str(r.anomaly_types))}")
 
-        # Per-detector contribution breakdown.
+        # [block-alfa kge-audit, KA.2] Per-detector contribution breakdown.
         # ranking_set / neighborhood_set / constraint_set / latent_set were
         # populated above. Print exclusive and pairwise/triple intersection
         # counts so the audit can decompose which detector drives the

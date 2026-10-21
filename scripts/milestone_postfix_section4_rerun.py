@@ -203,7 +203,9 @@ def detect_one_cell(dataset: str, stage_type: str, vtype: str | None, level: flo
     # [2026-06-23] Dump per-triple arrays for threshold-free metrics (PR-AUC/AUROC).
     _dump_dir = Path("progress/20260623")
     _dump_dir.mkdir(parents=True, exist_ok=True)
-    np.savez(_dump_dir / f"ode_postfix_{arch_label}_{dataset}_{vtype or stage_type}_{n_violations}.npz",
+    # Random cells are keyed by level and seed so levels and bootstrap seeds do not overwrite each other.
+    cell_key = f"{vtype}_{n_violations}" if vtype else f"random{level:g}_seed{int(perturbation_seed)}"
+    np.savez(_dump_dir / f"ode_postfix_{arch_label}_{dataset}_{cell_key}.npz",
              eval_energies=eval_energies, gt=gt, valid=valid, finite=finite,
              arch=arch_label)
 
@@ -211,6 +213,15 @@ def detect_one_cell(dataset: str, stage_type: str, vtype: str | None, level: flo
     detection = (eval_energies > thr) & finite
     ode_metrics = f1_for(detection, gt)
     ode_metrics["threshold_knee"] = thr
+
+    from canonical_persist import record_detection
+    keys = [(t.subject, t.relation, t.object) for t in eval_triples]
+    record_detection("postfix", dataset, f"{stage_type}_{vtype or 'entity_swap'}_{n_violations if vtype else level}_seed{int(perturbation_seed)}",
+                     arch_label, keys, eval_viol, {k for k, d in zip(keys, detection) if d},
+                     scores={k: e for k, e, f in zip(keys, eval_energies, finite) if f},
+                     threshold=float(thr), operator="knee",
+                     params={"n_steps_rk4": n_steps, "lambda_asym_override": lambda_asym_override},
+                     device=str(kgode.device))
 
     return {
         "ode_postfix": ode_metrics,
@@ -229,7 +240,9 @@ def run_native_tables(datasets, n_steps: int, sample_size: int = 10000,
     """Re-generate Tables 3 + 4a/4b/4c — native perturbation_seed=42."""
     results = {}
     for ds in datasets:
-        ds_out = REPO_ROOT / "paper_results" / ds / "post_fix_rerun" / "metrics"
+        # A2 feeds Tables 5-8; other architectures get their own directory so they never overwrite it.
+        sub = "post_fix_rerun" if arch_label == "A2" else f"post_fix_rerun_{arch_label}"
+        ds_out = REPO_ROOT / "paper_results" / ds / sub / "metrics"
         ds_out.mkdir(exist_ok=True, parents=True)
         results[ds] = {}
 

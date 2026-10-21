@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -75,7 +76,7 @@ def build_cc(dataset: str, present_relations: set):
 
 def build_kgode_postfix(dataset: str, triples, seed: int = 42, device: str = "cpu"):
     """Build a KGODESystem POST-FIX: embeddings dict includes BOTH entities
-    AND relations (matching the canonical post-fix state)."""
+    AND relations (matching the canonical post-fix state per commit 16a6c3e)."""
     bp = _load_hyperparam_cache(dataset, "ode")
     D = bp["embedding_dim"]
 
@@ -180,6 +181,14 @@ def rerun_native_ode(dataset: str, n_steps: int = 100):
         key = (t.subject, t.relation, t.object)
         triple_to_energy[key] = float(energies[i])
 
+    # Persist the full native A2 set once; Table 4, Table 12 and E1-E5 read this same set.
+    from canonical_persist import record_detection
+    keys = list(triple_to_energy)
+    record_detection("native", dataset, f"native_rk4_{n_steps}", "A2", keys, set(),
+                     {k for k, d in zip(keys, detection_mask) if d}, scores=triple_to_energy,
+                     threshold=float(thr), operator="knee", params={"n_steps_rk4": n_steps},
+                     extra={"bc": float(bimodality_coefficient(energies))}, device=str(kgode.device))
+
     return {
         "dataset": dataset,
         "n_triples": len(kgode.triples),
@@ -243,6 +252,8 @@ def compute_e5(per_dataset, kge_models=("TransE", "DistMult", "MuRE")):
         ode_scores = r["triple_to_energy"]
         for kge in kge_models:
             kge_scores = load_kge_detection(ds, kge)
+            if kge_scores is None and os.environ.get("CANONICAL_PERSIST_DIR"):  # canonical run: no silent skip
+                raise SystemExit(f"{ds}/{kge}/detections.json missing")
             if not kge_scores:
                 continue
             # Align on intersecting keys
@@ -278,6 +289,8 @@ def compute_e2(per_dataset, kge_models=("TransE", "DistMult", "MuRE")):
 
         for kge in kge_models:
             kge_scores = load_kge_detection(ds, kge)
+            if kge_scores is None and os.environ.get("CANONICAL_PERSIST_DIR"):  # canonical run: no silent skip
+                raise SystemExit(f"{ds}/{kge}/detections.json missing")
             if not kge_scores:
                 continue
             common_keys = sorted(set(ode_scores.keys()) & set(kge_scores.keys()),
@@ -366,7 +379,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--datasets", nargs="+",
                     default=["WN18RR", "FB15k-237", "codex-m"])
-    ap.add_argument("--n-steps", type=int, default=100)
+    ap.add_argument("--n-steps", type=int, default=50)
     ap.add_argument("--skip-e6", action="store_true")
     args = ap.parse_args()
 
@@ -402,6 +415,7 @@ def main():
         "e6_triviality_gap_singleseed": e6,
     }
     out_path = REPO_ROOT / "progress" / "audit_phase2_E_rerun.json"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, "w") as f:
         json.dump(out, f, indent=2)
     print(f"\nPersisted: {out_path}")

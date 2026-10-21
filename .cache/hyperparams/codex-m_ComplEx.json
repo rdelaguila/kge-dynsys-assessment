@@ -1,0 +1,33 @@
+{
+  "_meta": {
+    "dataset": "codex-m",
+    "model": "ComplEx",
+    "tuned_at": "2026-10-18T11:19:41.581773+00:00",
+    "random_seed": 42,
+    "n_trials": 18,
+    "metric": "held_out_filtered_MRR_native_vocab",
+    "best_metric_value": 0.00879069697111845,
+    "runner_up_metric_value": 0.005669489968568087,
+    "split": {
+      "surface_size": 25000,
+      "surface_sampling_seed": 42,
+      "split_seed": 42,
+      "train_frac": 0.9,
+      "n_train": 22500,
+      "n_valid": 2500,
+      "train_valid_intersection": 0,
+      "train_sha256_16": "95c4b6276a11a88c",
+      "valid_sha256_16": "d8e8657d8e0d2eb5",
+      "native_entities": 17050,
+      "native_relations": 51,
+      "native_positives_filtered": 206205,
+      "n_draws": 20,
+      "n_unique_candidates": 18
+    }
+  },
+  "best_params": {
+    "embedding_dim": 100,
+    "learning_rate": 0.005,
+    "negative_sampling": 50
+  }
+}

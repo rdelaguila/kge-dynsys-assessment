@@ -21,6 +21,25 @@ def get_triples_hash(triples: List['Triple']) -> str:
 
 
 
+
+def _cache_dump(obj, cache_path):
+    """Atomic joblib write: concurrent processes building the same structure never read a partial file."""
+    import os
+    tmp = cache_path.with_name(f".{cache_path.name}.{os.getpid()}.tmp")
+    joblib.dump(obj, tmp)
+    os.replace(tmp, cache_path)
+
+
+def _cache_load(cache_path):
+    """Load a cached structure; None if missing or unreadable (the caller recomputes)."""
+    if not cache_path.exists():
+        return None
+    try:
+        return joblib.load(cache_path)
+    except Exception as e:  # e.g. EOFError on a file written by an older non-atomic writer
+        print(f"Cached structure {cache_path.name} unreadable ({type(e).__name__}); recomputing")
+        return None
+
 @dataclass
 class Triple:
     subject: str
@@ -144,9 +163,9 @@ class TransitivityConstraint(Constraint):
         cache_key = f"transitivity_{safe_rel}_{dataset_hash}"
         cache_path = CACHE_DIR / f"{cache_key}.joblib"
         
-        if cache_path.exists():
+        data = _cache_load(cache_path)
+        if data is not None:
             print(f"Loading cached structure for {self.name}")
-            data = joblib.load(cache_path)
             self.adj_matrix = data['adj_matrix']
             self.entity_to_idx = data['entity_to_idx']
             self.idx_to_entity = data['idx_to_entity']
@@ -196,7 +215,7 @@ class TransitivityConstraint(Constraint):
                 self.adj[t.subject].add(t.object)
         
         # Save to cache
-        joblib.dump({
+        _cache_dump({
             'adj_matrix': self.adj_matrix,
             'entity_to_idx': self.entity_to_idx,
             'idx_to_entity': self.idx_to_entity
@@ -355,14 +374,14 @@ class SymmetryConstraint(Constraint):
         cache_key = f"symmetry_{safe_rel}_{dataset_hash}"
         cache_path = CACHE_DIR / f"{cache_key}.joblib"
         
-        if cache_path.exists():
-            # print(f"Loading cached structure for {self.name}")
-            self.relevant_triples = joblib.load(cache_path)
+        cached = _cache_load(cache_path)
+        if cached is not None:
+            self.relevant_triples = cached
             return
 
         self.relevant_triples = [t for t in triples if t.relation == self.relation]
         
-        joblib.dump(self.relevant_triples, cache_path)
+        _cache_dump(self.relevant_triples, cache_path)
         print(f"Cached structure to {cache_path}")
 
     def compute_violation(self,
@@ -860,7 +879,7 @@ class ConstraintChecker:
     def compute_asymmetry_gradient(self,
                                    embeddings: Dict[str, np.ndarray],
                                    triples: List[Triple]) -> Dict[str, np.ndarray]:
-        """Aggregated gradient from AntisymmetryConstraint instances
+        """[block7] Aggregated gradient from AntisymmetryConstraint instances
         ONLY. This is a separate path from ``compute_total_gradient`` so
         that asymmetry can be scaled by its own ``lambda_asym`` in the
         ODE dynamics, independent of ``lambda_logic`` which governs

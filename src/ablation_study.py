@@ -119,8 +119,10 @@ class KGPerturbator:
             self.relations.add(t.relation)
             self.triple_set.add((t.subject, t.relation, t.object))
         
-        self.entities = list(self.entities)
-        self.relations = list(self.relations)
+        # TEMP-FIX (uncommitted, stability-panel check only): sorted() instead
+        # of list() to remove PYTHONHASHSEED-dependent iteration order.
+        self.entities = sorted(self.entities)
+        self.relations = sorted(self.relations)
 
         # Relation properties (asymmetric/transitive/functional)
         self.relation_properties = relation_properties or {}
@@ -317,7 +319,9 @@ class KGPerturbator:
             transitive_rels = {self.relations[0]} if self.relations else set()
 
         violations = []
-        for rel in transitive_rels:
+        # TEMP-FIX (uncommitted, stability-panel check only): deterministic
+        # iteration order instead of raw set iteration.
+        for rel in sorted(transitive_rels):
             if rel not in self.rel_to_pairs:
                 continue
             pairs = self.rel_to_pairs[rel]

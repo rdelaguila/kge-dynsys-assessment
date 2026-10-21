@@ -1,4 +1,4 @@
-""" SDE wrapper around the existing ODE — block-sde milestone.
+"""Neural SDE wrapper around the existing Neural ODE — block-sde milestone.
 
 Extends ``KGODESystem`` (which carries the trained drift function as fixed
 dynamics parameterised by the cached lambdas) with a stochastic diffusion
@@ -6,12 +6,14 @@ term so that the embeddings evolve as
 
     dE(t) = f(E(t)) dt + sigma * dW(t)
 
-where ``f`` is the **same** ``ode_dynamics`` of the deterministic  ODE
+where ``f`` is the **same** ``ode_dynamics`` of the deterministic Neural ODE
 (reused as-is — *no retraining*) and the diffusion is additive scalar
-sigma *
+sigma * I (diagonal noise, no new network).
 
-The Fokker-Planck
-analysis points out that the SDE's stationary density depends explicitly on
+The motivation is the H_asym null verdict of §4.7 (8/8 cells UNSUPPORTED at
+p_Holm=1.000): the asymmetry gradient is mathematically active but
+F1-invariant on the deterministic detector observable. The Fokker-Planck
+analysis predicts that the SDE's stationary density depends explicitly on
 the potential gradient direction, so an observable derived from the
 *variance* of the stochastic trajectories should be sensitive to
 lambda_asym where the deterministic energy-knee observable was not.
@@ -121,8 +123,8 @@ def integrate_one_trajectory(
     The Brownian motion is constructed from ``entropy``. Two calls with the
     same ``entropy`` produce bit-identical trajectories.
 
-    *Implementation note*
-    ---------------------
+    Implementation note
+    -------------------
 
     ``torchsde.sdeint`` has a large one-time setup cost (~280 s on the canonical
     WN18RR perturbed pool of size 40,943×50, measured 2026-05-16 during the

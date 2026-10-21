@@ -1,0 +1,35 @@
+{
+  "_meta": {
+    "dataset": "codex-m",
+    "model": "ode",
+    "tuned_at": "2026-05-07T19:50:27.224755+00:00",
+    "random_seed": 42,
+    "n_trials": 30,
+    "metric": "MRR_held_out",
+    "best_metric_value": null,
+    "subsample": {
+      "size": 25000,
+      "seed": 42,
+      "source": "paper_results/codex-m/hyperparam_subsample.npy"
+    },
+    "regeneration_branch": "regeneration-2026-04-27",
+    "block": "block7",
+    "notes": "Re-tune after promoting AntisymmetryConstraint to a continuous gradient force in the Neural ODE (block7 milestone). Asymmetry now flows through its own lambda_asym (independent of lambda_logic which keeps governing transitivity + symmetry) with margin_asym controlling the L_asym hinge. Search grid extended per user spec D7+D11: lambda_data {0.5..10}, lambda_logic {0.05..20}, lambda_asym {0.1..5}, margin_asym {0.5..2}, t_span {(0,5),(0,10)}.",
+    "tuning_seconds": 41.3
+  },
+  "best_params": {
+    "embedding_dim": 50,
+    "t_span": [
+      0.0,
+      5.0
+    ],
+    "lambda_data": 10.0,
+    "lambda_logic": 2.0,
+    "lambda_asym": 0.5,
+    "margin_asym": 1.0,
+    "lambda_reg": 0.1,
+    "rtol": 0.01,
+    "atol": 1e-06,
+    "device": "mps"
+  }
+}
