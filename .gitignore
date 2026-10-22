@@ -1,0 +1,11 @@
+# Constraint-structure caches written at run time (the tuned hyperparameters in .cache/hyperparams are tracked)
+/.cache/*.joblib
+/.cache/.*.tmp
+# Working directories created when reproducing results (root level only)
+/reviewer_controls/work/
+/tables_out/
+/postprocess_review/
+/paper_results/
+/progress/
+/canonical_persist/
+__pycache__/

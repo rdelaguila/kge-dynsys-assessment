@@ -1,0 +1,9 @@
+WN18RR transitivity 4650
+codex-m cardinality 30930
+WN18RR asymmetry 13950
+FB15k-237 transitivity 46517
+WN18RR cardinality 13950
+codex-m asymmetry 20620
+codex-m transitivity 10310
+codex-m cardinality 10310
+FB15k-237 cardinality 15505

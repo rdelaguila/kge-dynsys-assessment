@@ -1,0 +1,1370 @@
+{
+  "protocol": {
+    "ode_archs": [
+      "A1",
+      "A2",
+      "A3"
+    ],
+    "kge_methods": [
+      "TransE",
+      "DistMult",
+      "MuRE"
+    ],
+    "K_definition": "K = n_violations in eval set",
+    "pauc_alpha": 0.05,
+    "bedroc_alpha": 20.0,
+    "ef_top_pct": 0.01
+  },
+  "cells": [
+    {
+      "dataset": "FB15k-237",
+      "vtype": "asymmetry",
+      "level_pct": 5,
+      "level_n": 15505,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.0064516129032258064,
+          "ndcg_at_K": 0.005785713439003548,
+          "bedroc": 0.000814572697831463,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.353716189928447,
+          "pauc_norm": 0.0027922030324046662,
+          "prauc": 0.03253093929362599
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.0064516129032258064,
+          "ndcg_at_K": 0.0058301222759829345,
+          "bedroc": 0.001031014204219433,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.37700142654961066,
+          "pauc_norm": 0.0034011649215397706,
+          "prauc": 0.03389820444050629
+        },
+        "ODE-A3": {
+          "status": "missing"
+        },
+        "TransE": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "DistMult": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "MuRE": {
+          "status": "no_kge_audit_for_cell"
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 465,
+      "prevalence": 0.0465,
+      "K": 465
+    },
+    {
+      "dataset": "FB15k-237",
+      "vtype": "asymmetry",
+      "level_pct": 10,
+      "level_n": 31011,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.012522361359570662,
+          "ndcg_at_K": 0.010908463576146893,
+          "bedroc": 0.0009735165201524138,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.358170572195003,
+          "pauc_norm": 0.003054465554742674,
+          "prauc": 0.03944073333013277
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.01073345259391771,
+          "ndcg_at_K": 0.009594336929845156,
+          "bedroc": 0.0011751872565598424,
+          "ef_at_1pct": 0.17889087656529518,
+          "auroc": 0.3780064079352438,
+          "pauc_norm": 0.001659870859773314,
+          "prauc": 0.04089728843199361
+        },
+        "ODE-A3": {
+          "status": "missing"
+        },
+        "TransE": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "DistMult": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "MuRE": {
+          "status": "no_kge_audit_for_cell"
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 559,
+      "prevalence": 0.0559,
+      "K": 559
+    },
+    {
+      "dataset": "FB15k-237",
+      "vtype": "asymmetry",
+      "level_pct": 15,
+      "level_n": 46517,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.014311270125223614,
+          "ndcg_at_K": 0.012610784675425913,
+          "bedroc": 0.000972022885643005,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.35630492282453174,
+          "pauc_norm": 0.004593067310605607,
+          "prauc": 0.03932383075645574
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.01073345259391771,
+          "ndcg_at_K": 0.009594336929845156,
+          "bedroc": 0.0011751872565598424,
+          "ef_at_1pct": 0.17889087656529518,
+          "auroc": 0.3780064079352438,
+          "pauc_norm": 0.001659870859773314,
+          "prauc": 0.04089728843199361
+        },
+        "ODE-A3": {
+          "status": "missing"
+        },
+        "TransE": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "DistMult": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "MuRE": {
+          "status": "no_kge_audit_for_cell"
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 559,
+      "prevalence": 0.0559,
+      "K": 559
+    },
+    {
+      "dataset": "FB15k-237",
+      "vtype": "transitivity",
+      "level_pct": 5,
+      "level_n": 15505,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": 9.679735369148731e-06,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.20430736371033362,
+          "pauc_norm": 0.0,
+          "prauc": 0.009748201828776202
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": 1.2362846052818874e-05,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.206040649579604,
+          "pauc_norm": 0.0,
+          "prauc": 0.009766925799213661
+        },
+        "ODE-A3": {
+          "status": "missing"
+        },
+        "TransE": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "DistMult": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "MuRE": {
+          "status": "no_kge_audit_for_cell"
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 168,
+      "prevalence": 0.0168,
+      "K": 168
+    },
+    {
+      "dataset": "FB15k-237",
+      "vtype": "transitivity",
+      "level_pct": 10,
+      "level_n": 31011,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": 7.1801627213537905e-06,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.20275448971289084,
+          "pauc_norm": 0.0,
+          "prauc": 0.009733240346360238
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": 1.2362846052818874e-05,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.206040649579604,
+          "pauc_norm": 0.0,
+          "prauc": 0.009766925799213661
+        },
+        "ODE-A3": {
+          "status": "missing"
+        },
+        "TransE": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "DistMult": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "MuRE": {
+          "status": "no_kge_audit_for_cell"
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 168,
+      "prevalence": 0.0168,
+      "K": 168
+    },
+    {
+      "dataset": "FB15k-237",
+      "vtype": "transitivity",
+      "level_pct": 15,
+      "level_n": 46517,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": 7.1801627213537905e-06,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.20275448971289084,
+          "pauc_norm": 0.0,
+          "prauc": 0.009733240346360238
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": 1.2362846052818874e-05,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.206040649579604,
+          "pauc_norm": 0.0,
+          "prauc": 0.009766925799213661
+        },
+        "ODE-A3": {
+          "hit_at_K": 0.047619047619047616,
+          "ndcg_at_K": 0.046965645569852374,
+          "bedroc": 0.004165093508519029,
+          "ef_at_1pct": 2.380952380952381,
+          "auroc": 0.4798586491146499,
+          "pauc_norm": 0.046180595916153276,
+          "prauc": 0.019913841502880607
+        },
+        "TransE": {
+          "hit_at_K": 0.005952380952380952,
+          "ndcg_at_K": 0.006233286580273438,
+          "bedroc": 0.001971240962853698,
+          "ef_at_1pct": 0.5952380952380952,
+          "auroc": 0.3750920221628114,
+          "pauc_norm": 0.007640261149211517,
+          "prauc": 0.01323841200698462
+        },
+        "DistMult": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": 6.124828900914717e-05,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.20975967685691038,
+          "pauc_norm": 0.0,
+          "prauc": 0.009779774215405873
+        },
+        "MuRE": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": 0.0018511336261568519,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.668257076019993,
+          "pauc_norm": 0.0009565461660661009,
+          "prauc": 0.02304295331220159
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 168,
+      "prevalence": 0.0168,
+      "K": 168
+    },
+    {
+      "dataset": "FB15k-237",
+      "vtype": "cardinality",
+      "level_pct": 5,
+      "level_n": 15505,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.006153846153846154,
+          "ndcg_at_K": 0.005299674779665451,
+          "bedroc": 0.0016080849870322457,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.3740240906380441,
+          "pauc_norm": 0.0054955277280858686,
+          "prauc": 0.024233338033620166
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.015384615384615385,
+          "ndcg_at_K": 0.012961943969106353,
+          "bedroc": 0.0015644898240306042,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.37170852713178293,
+          "pauc_norm": 0.008351421188630491,
+          "prauc": 0.024075754481584208
+        },
+        "ODE-A3": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": 0.0010336228455235298,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.38402576028622537,
+          "pauc_norm": 0.0013039157225203737,
+          "prauc": 0.024265754894814216
+        },
+        "TransE": {
+          "hit_at_K": 0.052307692307692305,
+          "ndcg_at_K": 0.04405971060556295,
+          "bedroc": 0.005983521103316075,
+          "ef_at_1pct": 0.6153846153846154,
+          "auroc": 0.6640298946531504,
+          "pauc_norm": 0.03182826475849731,
+          "prauc": 0.05315203145461989
+        },
+        "DistMult": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": 4.694355458712175e-05,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.16930964023057046,
+          "pauc_norm": 0.0,
+          "prauc": 0.018500408009700996
+        },
+        "MuRE": {
+          "hit_at_K": 0.22153846153846155,
+          "ndcg_at_K": 0.19044220820945026,
+          "bedroc": 0.026917496569296866,
+          "ef_at_1pct": 1.2307692307692308,
+          "auroc": 0.939078513218048,
+          "pauc_norm": 0.314116477837408,
+          "prauc": 0.2818071817270114
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 325,
+      "prevalence": 0.0325,
+      "K": 325
+    },
+    {
+      "dataset": "FB15k-237",
+      "vtype": "cardinality",
+      "level_pct": 10,
+      "level_n": 31011,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.012307692307692308,
+          "ndcg_at_K": 0.01006823461891371,
+          "bedroc": 0.0015816450908672992,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.36856450009938385,
+          "pauc_norm": 0.005864440469091632,
+          "prauc": 0.02394098435171592
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.015384615384615385,
+          "ndcg_at_K": 0.012961943969106353,
+          "bedroc": 0.0015644898240306042,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.37170852713178293,
+          "pauc_norm": 0.008351421188630491,
+          "prauc": 0.024075754481584208
+        },
+        "ODE-A3": {
+          "status": "missing"
+        },
+        "TransE": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "DistMult": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "MuRE": {
+          "status": "no_kge_audit_for_cell"
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 325,
+      "prevalence": 0.0325,
+      "K": 325
+    },
+    {
+      "dataset": "FB15k-237",
+      "vtype": "cardinality",
+      "level_pct": 15,
+      "level_n": 46517,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.012307692307692308,
+          "ndcg_at_K": 0.01006823461891371,
+          "bedroc": 0.0015816450908672992,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.36856450009938385,
+          "pauc_norm": 0.005864440469091632,
+          "prauc": 0.02394098435171592
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.015384615384615385,
+          "ndcg_at_K": 0.012961943969106353,
+          "bedroc": 0.0015644898240306042,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.37170852713178293,
+          "pauc_norm": 0.008351421188630491,
+          "prauc": 0.024075754481584208
+        },
+        "ODE-A3": {
+          "status": "missing"
+        },
+        "TransE": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "DistMult": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "MuRE": {
+          "status": "no_kge_audit_for_cell"
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 325,
+      "prevalence": 0.0325,
+      "K": 325
+    },
+    {
+      "dataset": "codex-m",
+      "vtype": "asymmetry",
+      "level_pct": 5,
+      "level_n": 10310,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.029411764705882353,
+          "ndcg_at_K": 0.02781965150036321,
+          "bedroc": 0.0028473844389675152,
+          "ef_at_1pct": 0.6787330316742081,
+          "auroc": 0.44936368482397065,
+          "pauc_norm": 0.01663575276071122,
+          "prauc": 0.038840743923891766
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.027149321266968326,
+          "ndcg_at_K": 0.025228417412759004,
+          "bedroc": 0.002663552892431865,
+          "ef_at_1pct": 0.45248868778280543,
+          "auroc": 0.44499679972428396,
+          "pauc_norm": 0.009042199138576672,
+          "prauc": 0.03826468433506676
+        },
+        "ODE-A3": {
+          "status": "missing"
+        },
+        "TransE": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "DistMult": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "MuRE": {
+          "status": "no_kge_audit_for_cell"
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 442,
+      "prevalence": 0.0442,
+      "K": 442
+    },
+    {
+      "dataset": "codex-m",
+      "vtype": "asymmetry",
+      "level_pct": 10,
+      "level_n": 20620,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.08105022831050228,
+          "ndcg_at_K": 0.08038414040542759,
+          "bedroc": 0.004744428317854707,
+          "ef_at_1pct": 1.0273972602739725,
+          "auroc": 0.4610138047279592,
+          "pauc_norm": 0.020188613902017656,
+          "prauc": 0.08081820709532675
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.0776255707762557,
+          "ndcg_at_K": 0.07939248876120462,
+          "bedroc": 0.0049628199832064636,
+          "ef_at_1pct": 1.1415525114155252,
+          "auroc": 0.46207134227757996,
+          "pauc_norm": 0.024405001411301214,
+          "prauc": 0.08149221858431277
+        },
+        "ODE-A3": {
+          "hit_at_K": 0.0502283105022831,
+          "ndcg_at_K": 0.048334741995298844,
+          "bedroc": 0.0029437553401041065,
+          "ef_at_1pct": 0.4566210045662101,
+          "auroc": 0.44713744822726553,
+          "pauc_norm": 0.00835770580475198,
+          "prauc": 0.07453641889723936
+        },
+        "TransE": {
+          "hit_at_K": 0.3892694063926941,
+          "ndcg_at_K": 0.4344391217440874,
+          "bedroc": 0.02520150641533792,
+          "ef_at_1pct": 8.333333333333334,
+          "auroc": 0.7979176801010532,
+          "pauc_norm": 0.23731755678735791,
+          "prauc": 0.3716511156224499
+        },
+        "DistMult": {
+          "hit_at_K": 0.14269406392694065,
+          "ndcg_at_K": 0.13985718734459088,
+          "bedroc": 0.008329974867889658,
+          "ef_at_1pct": 1.2557077625570776,
+          "auroc": 0.6077246346131133,
+          "pauc_norm": 0.03930248689291526,
+          "prauc": 0.1249097572663547
+        },
+        "MuRE": {
+          "hit_at_K": 0.4417808219178082,
+          "ndcg_at_K": 0.4363491709642292,
+          "bedroc": 0.025470680760939113,
+          "ef_at_1pct": 4.680365296803653,
+          "auroc": 0.9135460394483714,
+          "pauc_norm": 0.19690905014423296,
+          "prauc": 0.4106414058006196
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 876,
+      "prevalence": 0.0876,
+      "K": 876
+    },
+    {
+      "dataset": "codex-m",
+      "vtype": "asymmetry",
+      "level_pct": 15,
+      "level_n": 30930,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.10254372019077901,
+          "ndcg_at_K": 0.10241623034680748,
+          "bedroc": 0.00524963797841659,
+          "ef_at_1pct": 0.8744038155802862,
+          "auroc": 0.46489886369877487,
+          "pauc_norm": 0.0158273255693418,
+          "prauc": 0.11498623605232514
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.11049284578696343,
+          "ndcg_at_K": 0.10890001613462391,
+          "bedroc": 0.0055611391168416124,
+          "ef_at_1pct": 0.7949125596184421,
+          "auroc": 0.46270066950150923,
+          "pauc_norm": 0.01870435981623353,
+          "prauc": 0.11499694346017857
+        },
+        "ODE-A3": {
+          "status": "missing"
+        },
+        "TransE": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "DistMult": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "MuRE": {
+          "status": "no_kge_audit_for_cell"
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 1258,
+      "prevalence": 0.1258,
+      "K": 1258
+    },
+    {
+      "dataset": "codex-m",
+      "vtype": "transitivity",
+      "level_pct": 5,
+      "level_n": 10310,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": 2.3953731081489573e-06,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.0942593795428536,
+          "pauc_norm": 0.0,
+          "prauc": 0.0038267910435383474
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": 2.3953731081489573e-06,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.0942593795428536,
+          "pauc_norm": 0.0,
+          "prauc": 0.0038267910435383474
+        },
+        "ODE-A3": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": 2.026727021320403e-05,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.11684026166836782,
+          "pauc_norm": 0.0,
+          "prauc": 0.0029087038026482537
+        },
+        "TransE": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": 0.0019298050509440315,
+          "ef_at_1pct": 1.9230769230769231,
+          "auroc": 0.20621075747734371,
+          "pauc_norm": 0.013106615941356594,
+          "prauc": 0.004743408203984802
+        },
+        "DistMult": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": 1.930213900880038e-06,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.12182966812037982,
+          "pauc_norm": 0.0,
+          "prauc": 0.0028725262514592833
+        },
+        "MuRE": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": -6.515861340940896e-11,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.13779538214097922,
+          "pauc_norm": 0.0,
+          "prauc": 0.003025257724201867
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 52,
+      "prevalence": 0.0052,
+      "K": 52
+    },
+    {
+      "dataset": "codex-m",
+      "vtype": "transitivity",
+      "level_pct": 10,
+      "level_n": 20620,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": 2.3953731081489573e-06,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.0942593795428536,
+          "pauc_norm": 0.0,
+          "prauc": 0.0038267910435383474
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": 2.3953731081489573e-06,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.0942593795428536,
+          "pauc_norm": 0.0,
+          "prauc": 0.0038267910435383474
+        },
+        "ODE-A3": {
+          "status": "missing"
+        },
+        "TransE": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "DistMult": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "MuRE": {
+          "status": "no_kge_audit_for_cell"
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 52,
+      "prevalence": 0.0052,
+      "K": 52
+    },
+    {
+      "dataset": "codex-m",
+      "vtype": "transitivity",
+      "level_pct": 15,
+      "level_n": 30930,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": 2.3953731081489573e-06,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.0942593795428536,
+          "pauc_norm": 0.0,
+          "prauc": 0.0038267910435383474
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": 2.3953731081489573e-06,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.0942593795428536,
+          "pauc_norm": 0.0,
+          "prauc": 0.0038267910435383474
+        },
+        "ODE-A3": {
+          "status": "missing"
+        },
+        "TransE": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "DistMult": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "MuRE": {
+          "status": "no_kge_audit_for_cell"
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 52,
+      "prevalence": 0.0052,
+      "K": 52
+    },
+    {
+      "dataset": "codex-m",
+      "vtype": "cardinality",
+      "level_pct": 5,
+      "level_n": 10310,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.04751131221719457,
+          "ndcg_at_K": 0.051003883913221665,
+          "bedroc": 0.004261824471665197,
+          "ef_at_1pct": 2.7149321266968323,
+          "auroc": 0.4978391037713072,
+          "pauc_norm": 0.029962344684843857,
+          "prauc": 0.0463702386578473
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.04751131221719457,
+          "ndcg_at_K": 0.051003883913221665,
+          "bedroc": 0.004261824471665197,
+          "ef_at_1pct": 2.7149321266968323,
+          "auroc": 0.4978391037713072,
+          "pauc_norm": 0.029962344684843857,
+          "prauc": 0.0463702386578473
+        },
+        "ODE-A3": {
+          "hit_at_K": 0.04072398190045249,
+          "ndcg_at_K": 0.041372796234876864,
+          "bedroc": 0.0030704164474443765,
+          "ef_at_1pct": 1.3574660633484161,
+          "auroc": 0.476214045423085,
+          "pauc_norm": 0.022416132419455784,
+          "prauc": 0.0410633766170377
+        },
+        "TransE": {
+          "hit_at_K": 0.05656108597285068,
+          "ndcg_at_K": 0.053310994769320975,
+          "bedroc": 0.004551815425816801,
+          "ef_at_1pct": 1.5837104072398192,
+          "auroc": 0.564745578080573,
+          "pauc_norm": 0.02064556567713763,
+          "prauc": 0.05231911511603706
+        },
+        "DistMult": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": 2.366265132086137e-06,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.23393494729486755,
+          "pauc_norm": 0.0,
+          "prauc": 0.026704030662119852
+        },
+        "MuRE": {
+          "hit_at_K": 0.006787330316742082,
+          "ndcg_at_K": 0.005691230800643314,
+          "bedroc": 0.0038191278078289663,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.6315062410110598,
+          "pauc_norm": 0.0012403435467576377,
+          "prauc": 0.06782876659005847
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 442,
+      "prevalence": 0.0442,
+      "K": 442
+    },
+    {
+      "dataset": "codex-m",
+      "vtype": "cardinality",
+      "level_pct": 10,
+      "level_n": 20620,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.09931506849315068,
+          "ndcg_at_K": 0.09903969168409182,
+          "bedroc": 0.0059956354418634165,
+          "ef_at_1pct": 1.36986301369863,
+          "auroc": 0.511106990645375,
+          "pauc_norm": 0.028866615019047564,
+          "prauc": 0.09191553431643887
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.09931506849315068,
+          "ndcg_at_K": 0.09903969168409182,
+          "bedroc": 0.0059956354418634165,
+          "ef_at_1pct": 1.36986301369863,
+          "auroc": 0.511106990645375,
+          "pauc_norm": 0.028866615019047564,
+          "prauc": 0.09191553431643887
+        },
+        "ODE-A3": {
+          "status": "missing"
+        },
+        "TransE": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "DistMult": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "MuRE": {
+          "status": "no_kge_audit_for_cell"
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 876,
+      "prevalence": 0.0876,
+      "K": 876
+    },
+    {
+      "dataset": "codex-m",
+      "vtype": "cardinality",
+      "level_pct": 15,
+      "level_n": 30930,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.12275985663082438,
+          "ndcg_at_K": 0.12271479649181886,
+          "bedroc": 0.006956997931168024,
+          "ef_at_1pct": 1.4336917562724014,
+          "auroc": 0.511762921219574,
+          "pauc_norm": 0.028461218186131402,
+          "prauc": 0.11684165436606062
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.12275985663082438,
+          "ndcg_at_K": 0.12271479649181886,
+          "bedroc": 0.006956997931168024,
+          "ef_at_1pct": 1.4336917562724014,
+          "auroc": 0.511762921219574,
+          "pauc_norm": 0.028461218186131402,
+          "prauc": 0.11684165436606062
+        },
+        "ODE-A3": {
+          "hit_at_K": 0.1111111111111111,
+          "ndcg_at_K": 0.11032761877767028,
+          "bedroc": 0.006195659025009987,
+          "ef_at_1pct": 0.8064516129032258,
+          "auroc": 0.5569842647326998,
+          "pauc_norm": 0.022336882059326178,
+          "prauc": 0.1236151080340655
+        },
+        "TransE": {
+          "hit_at_K": 0.1550179211469534,
+          "ndcg_at_K": 0.15563153704953916,
+          "bedroc": 0.008845705508617952,
+          "ef_at_1pct": 1.7921146953405018,
+          "auroc": 0.5685497991637336,
+          "pauc_norm": 0.03614891416085298,
+          "prauc": 0.13660387197815893
+        },
+        "DistMult": {
+          "hit_at_K": 0.0,
+          "ndcg_at_K": 0.0,
+          "bedroc": 5.0253987005172205e-06,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.1753173923077047,
+          "pauc_norm": 0.0,
+          "prauc": 0.06449828300261444
+        },
+        "MuRE": {
+          "hit_at_K": 0.16308243727598568,
+          "ndcg_at_K": 0.14153366054111519,
+          "bedroc": 0.00656641274010311,
+          "ef_at_1pct": 0.08960573476702509,
+          "auroc": 0.6565330689943986,
+          "pauc_norm": 0.003935632339722331,
+          "prauc": 0.17311643823762707
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 1116,
+      "prevalence": 0.1116,
+      "K": 1116
+    },
+    {
+      "dataset": "WN18RR",
+      "vtype": "asymmetry",
+      "level_pct": 5,
+      "level_n": 4650,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.03205128205128205,
+          "ndcg_at_K": 0.02952822851455178,
+          "bedroc": 0.003740657943543729,
+          "ef_at_1pct": 0.42735042735042733,
+          "auroc": 0.5729673282259308,
+          "pauc_norm": 0.01308233893210813,
+          "prauc": 0.05479713840371589
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.02564102564102564,
+          "ndcg_at_K": 0.023986474256817655,
+          "bedroc": 0.004068317266456087,
+          "ef_at_1pct": 0.42735042735042733,
+          "auroc": 0.5626712629702558,
+          "pauc_norm": 0.011849424879219257,
+          "prauc": 0.056090568762801746
+        },
+        "ODE-A3": {
+          "status": "missing"
+        },
+        "TransE": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "DistMult": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "MuRE": {
+          "status": "no_kge_audit_for_cell"
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 468,
+      "prevalence": 0.0468,
+      "K": 468
+    },
+    {
+      "dataset": "WN18RR",
+      "vtype": "asymmetry",
+      "level_pct": 10,
+      "level_n": 9300,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.0866738894907909,
+          "ndcg_at_K": 0.08544312867516275,
+          "bedroc": 0.006019305747834432,
+          "ef_at_1pct": 1.3001083423618636,
+          "auroc": 0.5806605124258316,
+          "pauc_norm": 0.023480345296667936,
+          "prauc": 0.11020816585023624
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.1267605633802817,
+          "ndcg_at_K": 0.1209375501992809,
+          "bedroc": 0.00762151092153617,
+          "ef_at_1pct": 0.9750812567713977,
+          "auroc": 0.5771045029339092,
+          "pauc_norm": 0.028008834014416922,
+          "prauc": 0.11964266719212281
+        },
+        "ODE-A3": {
+          "status": "missing"
+        },
+        "TransE": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "DistMult": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "MuRE": {
+          "status": "no_kge_audit_for_cell"
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 923,
+      "prevalence": 0.0923,
+      "K": 923
+    },
+    {
+      "dataset": "WN18RR",
+      "vtype": "asymmetry",
+      "level_pct": 15,
+      "level_n": 13950,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.1376923076923077,
+          "ndcg_at_K": 0.13398903715986424,
+          "bedroc": 0.007262639381076099,
+          "ef_at_1pct": 1.0,
+          "auroc": 0.5755847922192749,
+          "pauc_norm": 0.023971706454465076,
+          "prauc": 0.15100368110035972
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.25076923076923074,
+          "ndcg_at_K": 0.23805980066242768,
+          "bedroc": 0.011575503423320995,
+          "ef_at_1pct": 0.8461538461538461,
+          "auroc": 0.5908068965517241,
+          "pauc_norm": 0.033391688770999114,
+          "prauc": 0.18067321934702407
+        },
+        "ODE-A3": {
+          "hit_at_K": 0.11,
+          "ndcg_at_K": 0.1065209538747484,
+          "bedroc": 0.00583966152698277,
+          "ef_at_1pct": 0.4615384615384615,
+          "auroc": 0.549331697612732,
+          "pauc_norm": 0.017230769230769234,
+          "prauc": 0.1353652414192955
+        },
+        "TransE": {
+          "hit_at_K": 0.2823076923076923,
+          "ndcg_at_K": 0.3094072282672731,
+          "bedroc": 0.018532341363133628,
+          "ef_at_1pct": 4.307692307692308,
+          "auroc": 0.6342697170645446,
+          "pauc_norm": 0.11501591511936339,
+          "prauc": 0.2492149772305737
+        },
+        "DistMult": {
+          "hit_at_K": 0.14461538461538462,
+          "ndcg_at_K": 0.144002731581252,
+          "bedroc": 0.007599054829033733,
+          "ef_at_1pct": 1.3076923076923077,
+          "auroc": 0.6102219717064545,
+          "pauc_norm": 0.02618037135278515,
+          "prauc": 0.15782144014374233
+        },
+        "MuRE": {
+          "hit_at_K": 0.20461538461538462,
+          "ndcg_at_K": 0.22198160809457199,
+          "bedroc": 0.012778719694305062,
+          "ef_at_1pct": 3.1538461538461537,
+          "auroc": 0.5592880194518126,
+          "pauc_norm": 0.06204067197170645,
+          "prauc": 0.17945172410640958
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 1300,
+      "prevalence": 0.13,
+      "K": 1300
+    },
+    {
+      "dataset": "WN18RR",
+      "vtype": "transitivity",
+      "level_pct": 5,
+      "level_n": 4650,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.027777777777777776,
+          "ndcg_at_K": 0.02638081130507957,
+          "bedroc": 0.0033461319240991236,
+          "ef_at_1pct": 0.641025641025641,
+          "auroc": 0.6168121056916693,
+          "pauc_norm": 0.015879933001208702,
+          "prauc": 0.05750012157247631
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.027777777777777776,
+          "ndcg_at_K": 0.026399954852622618,
+          "bedroc": 0.0033350910088599268,
+          "ef_at_1pct": 0.42735042735042733,
+          "auroc": 0.6156576498057824,
+          "pauc_norm": 0.01585751638206527,
+          "prauc": 0.057342327294649574
+        },
+        "ODE-A3": {
+          "hit_at_K": 0.029914529914529916,
+          "ndcg_at_K": 0.030214264228285104,
+          "bedroc": 0.0031416864176832832,
+          "ef_at_1pct": 0.8547008547008547,
+          "auroc": 0.5801775216903207,
+          "pauc_norm": 0.015691633400403856,
+          "prauc": 0.05273440844181273
+        },
+        "TransE": {
+          "hit_at_K": 0.1452991452991453,
+          "ndcg_at_K": 0.14494612309973604,
+          "bedroc": 0.01029836889742534,
+          "ef_at_1pct": 2.9914529914529915,
+          "auroc": 0.6794829203295423,
+          "pauc_norm": 0.08592738450061152,
+          "prauc": 0.09664440288600062
+        },
+        "DistMult": {
+          "hit_at_K": 0.008547008547008548,
+          "ndcg_at_K": 0.007197797635625423,
+          "bedroc": 0.0018362550363217637,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.6471430243067885,
+          "pauc_norm": 0.0014077636822076606,
+          "prauc": 0.06076342798594298
+        },
+        "MuRE": {
+          "hit_at_K": 0.07905982905982906,
+          "ndcg_at_K": 0.07033326621485148,
+          "bedroc": 0.00610223131293608,
+          "ef_at_1pct": 0.8547008547008547,
+          "auroc": 0.6683993592433584,
+          "pauc_norm": 0.03239649798609093,
+          "prauc": 0.07373696114384884
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 468,
+      "prevalence": 0.0468,
+      "K": 468
+    },
+    {
+      "dataset": "WN18RR",
+      "vtype": "transitivity",
+      "level_pct": 10,
+      "level_n": 9300,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.10292524377031419,
+          "ndcg_at_K": 0.09877380126650755,
+          "bedroc": 0.005920753810091865,
+          "ef_at_1pct": 0.7583965330444205,
+          "auroc": 0.6100638798596957,
+          "pauc_norm": 0.025557195683827458,
+          "prauc": 0.11322149062643175
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.10509209100758396,
+          "ndcg_at_K": 0.10049124684712255,
+          "bedroc": 0.0059133715078680225,
+          "ef_at_1pct": 0.7583965330444205,
+          "auroc": 0.6095529627285325,
+          "pauc_norm": 0.025184794924750578,
+          "prauc": 0.11313030078623279
+        },
+        "ODE-A3": {
+          "status": "missing"
+        },
+        "TransE": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "DistMult": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "MuRE": {
+          "status": "no_kge_audit_for_cell"
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 923,
+      "prevalence": 0.0923,
+      "K": 923
+    },
+    {
+      "dataset": "WN18RR",
+      "vtype": "transitivity",
+      "level_pct": 15,
+      "level_n": 13950,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.15615384615384614,
+          "ndcg_at_K": 0.14968711152570713,
+          "bedroc": 0.007553790140307686,
+          "ef_at_1pct": 1.076923076923077,
+          "auroc": 0.618333510167993,
+          "pauc_norm": 0.02192572944297082,
+          "prauc": 0.16217322892856997
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.15076923076923077,
+          "ndcg_at_K": 0.14570993526807266,
+          "bedroc": 0.0076558402721549155,
+          "ef_at_1pct": 1.076923076923077,
+          "auroc": 0.6185337754199823,
+          "pauc_norm": 0.021184792219274978,
+          "prauc": 0.16239938560773926
+        },
+        "ODE-A3": {
+          "status": "missing"
+        },
+        "TransE": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "DistMult": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "MuRE": {
+          "status": "no_kge_audit_for_cell"
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 1300,
+      "prevalence": 0.13,
+      "K": 1300
+    },
+    {
+      "dataset": "WN18RR",
+      "vtype": "cardinality",
+      "level_pct": 5,
+      "level_n": 4650,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.01282051282051282,
+          "ndcg_at_K": 0.010865990976581702,
+          "bedroc": 0.0008321001409050177,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.3654119636599704,
+          "pauc_norm": 0.0042367410181090425,
+          "prauc": 0.03331748806185916
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.01282051282051282,
+          "ndcg_at_K": 0.01067706088663991,
+          "bedroc": 0.0008320394457546499,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.3655859166245234,
+          "pauc_norm": 0.0018695460365624026,
+          "prauc": 0.033328867536706275
+        },
+        "ODE-A3": {
+          "status": "missing"
+        },
+        "TransE": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "DistMult": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "MuRE": {
+          "status": "no_kge_audit_for_cell"
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 468,
+      "prevalence": 0.0468,
+      "K": 468
+    },
+    {
+      "dataset": "WN18RR",
+      "vtype": "cardinality",
+      "level_pct": 10,
+      "level_n": 9300,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.02275189599133261,
+          "ndcg_at_K": 0.0215418794325479,
+          "bedroc": 0.0012348913079950061,
+          "ef_at_1pct": 0.10834236186348864,
+          "auroc": 0.3576745768805254,
+          "pauc_norm": 0.005206449074017156,
+          "prauc": 0.065557059177014
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.023835319609967497,
+          "ndcg_at_K": 0.022496846584246447,
+          "bedroc": 0.0012557169404136942,
+          "ef_at_1pct": 0.0,
+          "auroc": 0.3582221969711166,
+          "pauc_norm": 0.006087320100295164,
+          "prauc": 0.06564077620397724
+        },
+        "ODE-A3": {
+          "status": "missing"
+        },
+        "TransE": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "DistMult": {
+          "status": "no_kge_audit_for_cell"
+        },
+        "MuRE": {
+          "status": "no_kge_audit_for_cell"
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 923,
+      "prevalence": 0.0923,
+      "K": 923
+    },
+    {
+      "dataset": "WN18RR",
+      "vtype": "cardinality",
+      "level_pct": 15,
+      "level_n": 13950,
+      "detectors": {
+        "ODE-A1": {
+          "hit_at_K": 0.027692307692307693,
+          "ndcg_at_K": 0.026551169499715,
+          "bedroc": 0.001503082059244262,
+          "ef_at_1pct": 0.07692307692307693,
+          "auroc": 0.3578455349248453,
+          "pauc_norm": 0.0032643678160919542,
+          "prauc": 0.09298023080163106
+        },
+        "ODE-A2": {
+          "hit_at_K": 0.026923076923076925,
+          "ndcg_at_K": 0.02603044720166914,
+          "bedroc": 0.0015073324250313447,
+          "ef_at_1pct": 0.07692307692307693,
+          "auroc": 0.357884792219275,
+          "pauc_norm": 0.0033386383731211313,
+          "prauc": 0.09298986781849342
+        },
+        "ODE-A3": {
+          "hit_at_K": 0.04923076923076923,
+          "ndcg_at_K": 0.04826869684187626,
+          "bedroc": 0.00249127359188965,
+          "ef_at_1pct": 0.23076923076923075,
+          "auroc": 0.3737840848806366,
+          "pauc_norm": 0.006610079575596817,
+          "prauc": 0.09675857980661291
+        },
+        "TransE": {
+          "hit_at_K": 0.18846153846153846,
+          "ndcg_at_K": 0.18403815699332254,
+          "bedroc": 0.009992872612506476,
+          "ef_at_1pct": 1.0,
+          "auroc": 0.6250008841732979,
+          "pauc_norm": 0.035499557913351014,
+          "prauc": 0.17536169219283218
+        },
+        "DistMult": {
+          "hit_at_K": 0.11692307692307692,
+          "ndcg_at_K": 0.10739209391731412,
+          "bedroc": 0.0038187950029595088,
+          "ef_at_1pct": 0.38461538461538464,
+          "auroc": 0.49908642793987623,
+          "pauc_norm": 0.007503094606542881,
+          "prauc": 0.1182584742905127
+        },
+        "MuRE": {
+          "hit_at_K": 0.08384615384615385,
+          "ndcg_at_K": 0.12140746434309155,
+          "bedroc": 0.00927143927925209,
+          "ef_at_1pct": 3.615384615384615,
+          "auroc": 0.3910965959328029,
+          "pauc_norm": 0.048422634836427926,
+          "prauc": 0.13369934043198828
+        }
+      },
+      "n_eval": 10000,
+      "n_pos": 1300,
+      "prevalence": 0.13,
+      "K": 1300
+    }
+  ]
+}

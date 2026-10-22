@@ -36,6 +36,9 @@ visualization code.
 - `.cache/hyperparams/` -- the tuned hyperparameters used to produce the
   published results
 - `figures/` -- Figure 1 (SDE diffusion-scale sweep), PDF and PNG
+- `results/ranking_panel/` -- the complete multimetric ranking panel (Appendix B.1)
+- `reviewer_controls/` -- data, scripts and results of the additional checker,
+  training and fusion controls (see `reviewer_controls/README.md`)
 - `tests/` -- tests verifying table generation
 - `generate_tables.py` -- thin wrapper that regenerates the statistical
   families from the outputs of `run_all.py`
@@ -52,6 +55,8 @@ scripts/
   postprocess_review/
 tests/
 figures/
+results/ranking_panel/
+reviewer_controls/
 .cache/hyperparams/
 generate_tables.py
 README.md
@@ -260,6 +265,20 @@ sweep on 50 WN18RR triples with ten trajectories per triple: per-triple
 variance (mean and SD as separate series; since mean - SD <= 0 at every
 sigma, no +/-SD bars are drawn on the logarithmic axis) and the coefficient
 of variation. The dotted line marks the fixed A3 configuration sigma = 0.05.
+
+## Ranking panel and additional controls
+
+`results/ranking_panel/full_panel.json` contains the complete multimetric
+ranking panel of the canonical execution: Hit@K, NDCG@K, BEDROC, EF@1%,
+AUROC, pAUC@5% and PR-AUC for every populated detector--condition record.
+
+`reviewer_controls/` contains the additional controls: the symbolic
+checker on its own, conventionally trained TransE with the same checker,
+common decision rules, rank fusion with a permuted-score control, and
+the training-seed, dimension, degree and checker-scope analyses. It
+includes the subset of the canonical execution they read, the per-triple
+scores of the new runs, the result tables and the commands to reproduce
+them; see `reviewer_controls/README.md`.
 
 ## CoT / diagnostic module
 
