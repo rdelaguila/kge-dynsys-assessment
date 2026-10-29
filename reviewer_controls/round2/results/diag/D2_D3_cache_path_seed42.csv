@@ -1,0 +1,5 @@
+score,constraint_structure_path,equal_to_frozen,max_abs_diff_vs_frozen,ndcg_at_K,auroc,fusion_with_runner_TransE_ndcg,spearman_vs_other_path,frozen_artifact_path
+A2,fresh (cache miss; panel runner),True,0.0,0.238060,0.590807,0.338383,0.997401,ode_postfix_A2 (a2_grid wrote the caches: 8 'Cached structure to')
+A2,cache hit (diag D3),False,7.7598,0.239891,0.590208,0.340562,0.997401,
+A1,fresh (cache miss; panel runner and D2 nocache),False,5.8426,0.134765,0.575710,0.285682,0.997742,
+A1,cache hit (diag D2 cache),True,0.0,0.133989,0.575585,0.287364,0.997742,ode_postfix_A1 (a1_grid ran right after a2_grid on the same pools: 4 'Loading cached structure')

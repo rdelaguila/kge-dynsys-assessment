@@ -16,6 +16,10 @@ This folder contains the data, scripts and results of the additional controls re
 The complete multimetric ranking panel referred to in Appendix B.1 is in `results/ranking_panel/full_panel.json`
 at the repository root.
 
+The analyses of the second review round are in `round2/`; see `round2/README.md`. They comprise the ten-seed WN18RR
+asymmetry-15 % replication with A1, degree controls and exclusive recovery, TransE trained on the full perturbed pool,
+and the common positional counting.
+
 ## Contents
 
 | Path | Content |

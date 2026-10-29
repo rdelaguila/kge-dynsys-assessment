@@ -38,7 +38,8 @@ visualization code.
 - `figures/` -- Figure 1 (SDE diffusion-scale sweep), PDF and PNG
 - `results/ranking_panel/` -- the complete multimetric ranking panel (Appendix B.1)
 - `reviewer_controls/` -- data, scripts and results of the additional checker,
-  training and fusion controls (see `reviewer_controls/README.md`)
+  training and fusion controls (see `reviewer_controls/README.md`); the
+  second-round analyses are in `reviewer_controls/round2/` (see its README)
 - `tests/` -- tests verifying table generation
 - `generate_tables.py` -- thin wrapper that regenerates the statistical
   families from the outputs of `run_all.py`
@@ -57,6 +58,7 @@ tests/
 figures/
 results/ranking_panel/
 reviewer_controls/
+  round2/
 .cache/hyperparams/
 generate_tables.py
 README.md

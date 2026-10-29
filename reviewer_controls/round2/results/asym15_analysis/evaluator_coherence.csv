@@ -1,0 +1,163 @@
+check,cell,config,metric,recomputed,reference,abs_diff,ok
+block_a_metrics,FB15k-237/cardinality/15505,A2,ndcg_at_K,0.012961943969106353,0.012961943969106353,0.0,True
+block_a_metrics,FB15k-237/cardinality/15505,A2,auroc,0.37170852713178293,0.37170852713178293,0.0,True
+block_a_metrics,FB15k-237/cardinality/15505,A1,ndcg_at_K,0.005299674779665451,0.005299674779665451,0.0,True
+block_a_metrics,FB15k-237/cardinality/15505,A1,auroc,0.3740240906380441,0.3740240906380441,0.0,True
+block_a_metrics,FB15k-237/cardinality/15505,degree,ndcg_at_K,0.0,0.0,0.0,True
+block_a_metrics,FB15k-237/cardinality/15505,degree,auroc,0.1364721129000199,0.1364721129000199,0.0,True
+block_a_metrics,FB15k-237/cardinality/15505,TransE,ndcg_at_K,0.04405971060556295,0.04405971060556295,0.0,True
+block_a_metrics,FB15k-237/cardinality/15505,TransE,auroc,0.6640298946531504,0.6640298946531504,0.0,True
+block_a_metrics,FB15k-237/cardinality/15505,DistMult,ndcg_at_K,0.0,0.0,0.0,True
+block_a_metrics,FB15k-237/cardinality/15505,DistMult,auroc,0.16930964023057046,0.16930964023057046,0.0,True
+block_a_metrics,FB15k-237/cardinality/15505,MuRE,ndcg_at_K,0.19044220820945026,0.19044220820945026,0.0,True
+block_a_metrics,FB15k-237/cardinality/15505,MuRE,auroc,0.939078513218048,0.939078513218048,0.0,True
+block_a_metrics,FB15k-237/cardinality/15505,"Fusion(A2,TransE)",ndcg_at_K,0.050238129104981474,0.050238129104981474,0.0,True
+block_a_metrics,FB15k-237/cardinality/15505,"Fusion(A2,TransE)",auroc,0.5152079507056251,0.5152079507056251,0.0,True
+block_a_metrics,FB15k-237/cardinality/15505,"Fusion(degree,TransE)",ndcg_at_K,0.0,0.0,0.0,True
+block_a_metrics,FB15k-237/cardinality/15505,"Fusion(degree,TransE)",auroc,0.3480621745179885,0.3480621745179885,0.0,True
+block_a_metrics,FB15k-237/transitivity/46517,A2,ndcg_at_K,0.0,0.0,0.0,True
+block_a_metrics,FB15k-237/transitivity/46517,A2,auroc,0.206040649579604,0.206040649579604,0.0,True
+block_a_metrics,FB15k-237/transitivity/46517,A1,ndcg_at_K,0.0,0.0,0.0,True
+block_a_metrics,FB15k-237/transitivity/46517,A1,auroc,0.20275448971289084,0.20275448971289084,0.0,True
+block_a_metrics,FB15k-237/transitivity/46517,degree,ndcg_at_K,0.021672762806609777,0.021672762806609777,0.0,True
+block_a_metrics,FB15k-237/transitivity/46517,degree,auroc,0.727148233174474,0.727148233174474,0.0,True
+block_a_metrics,FB15k-237/transitivity/46517,TransE,ndcg_at_K,0.006233286580273438,0.006233286580273438,0.0,True
+block_a_metrics,FB15k-237/transitivity/46517,TransE,auroc,0.3750920221628114,0.3750920221628114,0.0,True
+block_a_metrics,FB15k-237/transitivity/46517,DistMult,ndcg_at_K,0.0,0.0,0.0,True
+block_a_metrics,FB15k-237/transitivity/46517,DistMult,auroc,0.20975967685691038,0.20975967685691038,0.0,True
+block_a_metrics,FB15k-237/transitivity/46517,MuRE,ndcg_at_K,0.0,0.0,0.0,True
+block_a_metrics,FB15k-237/transitivity/46517,MuRE,auroc,0.668257076019993,0.668257076019993,0.0,True
+block_a_metrics,FB15k-237/transitivity/46517,"Fusion(A2,TransE)",ndcg_at_K,0.0,0.0,0.0,True
+block_a_metrics,FB15k-237/transitivity/46517,"Fusion(A2,TransE)",auroc,0.24100604440311518,0.24100604440311518,0.0,True
+block_a_metrics,FB15k-237/transitivity/46517,"Fusion(degree,TransE)",ndcg_at_K,0.06104068391043375,0.06104068391043375,0.0,True
+block_a_metrics,FB15k-237/transitivity/46517,"Fusion(degree,TransE)",auroc,0.5585421388856601,0.5585421388856601,0.0,True
+block_a_metrics,WN18RR/asymmetry/13950,A2,ndcg_at_K,0.23805980066242768,0.23805980066242768,0.0,True
+block_a_metrics,WN18RR/asymmetry/13950,A2,auroc,0.5908068965517241,0.5908068965517241,0.0,True
+block_a_metrics,WN18RR/asymmetry/13950,A1,ndcg_at_K,0.13398903715986424,0.13398903715986424,0.0,True
+block_a_metrics,WN18RR/asymmetry/13950,A1,auroc,0.5755847922192749,0.5755847922192749,0.0,True
+block_a_metrics,WN18RR/asymmetry/13950,degree,ndcg_at_K,0.18514909658993936,0.18514909658993936,0.0,True
+block_a_metrics,WN18RR/asymmetry/13950,degree,auroc,0.5620212201591511,0.5620212201591511,0.0,True
+block_a_metrics,WN18RR/asymmetry/13950,TransE,ndcg_at_K,0.3094072282672731,0.3094072282672731,0.0,True
+block_a_metrics,WN18RR/asymmetry/13950,TransE,auroc,0.6342697170645446,0.6342697170645446,0.0,True
+block_a_metrics,WN18RR/asymmetry/13950,DistMult,ndcg_at_K,0.144002731581252,0.144002731581252,0.0,True
+block_a_metrics,WN18RR/asymmetry/13950,DistMult,auroc,0.6102219717064545,0.6102219717064545,0.0,True
+block_a_metrics,WN18RR/asymmetry/13950,MuRE,ndcg_at_K,0.22198160809457199,0.22198160809457199,0.0,True
+block_a_metrics,WN18RR/asymmetry/13950,MuRE,auroc,0.5592880194518126,0.5592880194518126,0.0,True
+block_a_metrics,WN18RR/asymmetry/13950,"Fusion(A2,TransE)",ndcg_at_K,0.3368595116603764,0.3368595116603764,0.0,True
+block_a_metrics,WN18RR/asymmetry/13950,"Fusion(A2,TransE)",auroc,0.6372354553492484,0.6372354553492484,0.0,True
+block_a_metrics,WN18RR/asymmetry/13950,"Fusion(degree,TransE)",ndcg_at_K,0.322055101935103,0.322055101935103,0.0,True
+block_a_metrics,WN18RR/asymmetry/13950,"Fusion(degree,TransE)",auroc,0.6138057913351017,0.6138057913351017,0.0,True
+block_a_metrics,WN18RR/cardinality/13950,A2,ndcg_at_K,0.02603044720166914,0.02603044720166914,0.0,True
+block_a_metrics,WN18RR/cardinality/13950,A2,auroc,0.357884792219275,0.357884792219275,0.0,True
+block_a_metrics,WN18RR/cardinality/13950,A1,ndcg_at_K,0.026551169499715,0.026551169499715,0.0,True
+block_a_metrics,WN18RR/cardinality/13950,A1,auroc,0.3578455349248453,0.3578455349248453,0.0,True
+block_a_metrics,WN18RR/cardinality/13950,degree,ndcg_at_K,0.005268026754427103,0.005268026754427103,0.0,True
+block_a_metrics,WN18RR/cardinality/13950,degree,auroc,0.24068505747126437,0.24068505747126437,0.0,True
+block_a_metrics,WN18RR/cardinality/13950,TransE,ndcg_at_K,0.18403815699332254,0.18403815699332254,0.0,True
+block_a_metrics,WN18RR/cardinality/13950,TransE,auroc,0.6250008841732979,0.6250008841732979,0.0,True
+block_a_metrics,WN18RR/cardinality/13950,DistMult,ndcg_at_K,0.10739209391731412,0.10739209391731412,0.0,True
+block_a_metrics,WN18RR/cardinality/13950,DistMult,auroc,0.49908642793987623,0.49908642793987623,0.0,True
+block_a_metrics,WN18RR/cardinality/13950,MuRE,ndcg_at_K,0.12140746434309155,0.12140746434309155,0.0,True
+block_a_metrics,WN18RR/cardinality/13950,MuRE,auroc,0.3910965959328029,0.3910965959328029,0.0,True
+block_a_metrics,WN18RR/cardinality/13950,"Fusion(A2,TransE)",ndcg_at_K,0.08366189089731316,0.08366189089731316,0.0,True
+block_a_metrics,WN18RR/cardinality/13950,"Fusion(A2,TransE)",auroc,0.4912698054818745,0.4912698054818745,0.0,True
+block_a_metrics,WN18RR/cardinality/13950,"Fusion(degree,TransE)",ndcg_at_K,0.04525387256198472,0.04525387256198472,0.0,True
+block_a_metrics,WN18RR/cardinality/13950,"Fusion(degree,TransE)",auroc,0.39997745358090186,0.39997745358090186,0.0,True
+block_a_metrics,WN18RR/transitivity/4650,A2,ndcg_at_K,0.026399954852622618,0.026399954852622618,0.0,True
+block_a_metrics,WN18RR/transitivity/4650,A2,auroc,0.6156576498057824,0.6156576498057824,0.0,True
+block_a_metrics,WN18RR/transitivity/4650,A1,ndcg_at_K,0.02638081130507957,0.02638081130507957,0.0,True
+block_a_metrics,WN18RR/transitivity/4650,A1,auroc,0.6168121056916693,0.6168121056916693,0.0,True
+block_a_metrics,WN18RR/transitivity/4650,degree,ndcg_at_K,0.06635854010041639,0.06635854010041639,0.0,True
+block_a_metrics,WN18RR/transitivity/4650,degree,auroc,0.6714375957189637,0.6714375957189637,0.0,True
+block_a_metrics,WN18RR/transitivity/4650,TransE,ndcg_at_K,0.14494612309973604,0.14494612309973604,0.0,True
+block_a_metrics,WN18RR/transitivity/4650,TransE,auroc,0.6794829203295423,0.6794829203295423,0.0,True
+block_a_metrics,WN18RR/transitivity/4650,DistMult,ndcg_at_K,0.007197797635625423,0.007197797635625423,0.0,True
+block_a_metrics,WN18RR/transitivity/4650,DistMult,auroc,0.6471430243067885,0.6471430243067885,0.0,True
+block_a_metrics,WN18RR/transitivity/4650,MuRE,ndcg_at_K,0.07033326621485148,0.07033326621485148,0.0,True
+block_a_metrics,WN18RR/transitivity/4650,MuRE,auroc,0.6683993592433584,0.6683993592433584,0.0,True
+block_a_metrics,WN18RR/transitivity/4650,"Fusion(A2,TransE)",ndcg_at_K,0.09968917958563427,0.09968917958563427,0.0,True
+block_a_metrics,WN18RR/transitivity/4650,"Fusion(A2,TransE)",auroc,0.7075229725512981,0.7075229725512981,0.0,True
+block_a_metrics,WN18RR/transitivity/4650,"Fusion(degree,TransE)",ndcg_at_K,0.21813041832740315,0.21813041832740315,0.0,True
+block_a_metrics,WN18RR/transitivity/4650,"Fusion(degree,TransE)",auroc,0.7291826945493542,0.7291826945493542,0.0,True
+block_a_metrics,codex-m/asymmetry/20620,A2,ndcg_at_K,0.07939248876120462,0.07939248876120462,0.0,True
+block_a_metrics,codex-m/asymmetry/20620,A2,auroc,0.46207134227757996,0.46207134227757996,0.0,True
+block_a_metrics,codex-m/asymmetry/20620,A1,ndcg_at_K,0.08038414040542759,0.08038414040542759,0.0,True
+block_a_metrics,codex-m/asymmetry/20620,A1,auroc,0.4610138047279592,0.4610138047279592,0.0,True
+block_a_metrics,codex-m/asymmetry/20620,degree,ndcg_at_K,0.12405633119242918,0.12405633119242918,0.0,True
+block_a_metrics,codex-m/asymmetry/20620,degree,auroc,0.5808562995081465,0.5808562995081465,0.0,True
+block_a_metrics,codex-m/asymmetry/20620,TransE,ndcg_at_K,0.4344391217440874,0.4344391217440874,0.0,True
+block_a_metrics,codex-m/asymmetry/20620,TransE,auroc,0.7979176801010532,0.7979176801010532,0.0,True
+block_a_metrics,codex-m/asymmetry/20620,DistMult,ndcg_at_K,0.13985718734459088,0.13985718734459088,0.0,True
+block_a_metrics,codex-m/asymmetry/20620,DistMult,auroc,0.6077246346131133,0.6077246346131133,0.0,True
+block_a_metrics,codex-m/asymmetry/20620,MuRE,ndcg_at_K,0.4363491709642292,0.4363491709642292,0.0,True
+block_a_metrics,codex-m/asymmetry/20620,MuRE,auroc,0.9135460394483714,0.9135460394483714,0.0,True
+block_a_metrics,codex-m/asymmetry/20620,"Fusion(A2,TransE)",ndcg_at_K,0.20957577252258802,0.20957577252258802,0.0,True
+block_a_metrics,codex-m/asymmetry/20620,"Fusion(A2,TransE)",auroc,0.6814025656655436,0.6814025656655436,0.0,True
+block_a_metrics,codex-m/asymmetry/20620,"Fusion(degree,TransE)",ndcg_at_K,0.46471752677545586,0.46471752677545586,0.0,True
+block_a_metrics,codex-m/asymmetry/20620,"Fusion(degree,TransE)",auroc,0.7467846604569413,0.7467846604569413,0.0,True
+block_a_metrics,codex-m/cardinality/10310,A2,ndcg_at_K,0.051003883913221665,0.051003883913221665,0.0,True
+block_a_metrics,codex-m/cardinality/10310,A2,auroc,0.4978391037713072,0.4978391037713072,0.0,True
+block_a_metrics,codex-m/cardinality/10310,A1,ndcg_at_K,0.051003883913221665,0.051003883913221665,0.0,True
+block_a_metrics,codex-m/cardinality/10310,A1,auroc,0.4978391037713072,0.4978391037713072,0.0,True
+block_a_metrics,codex-m/cardinality/10310,degree,ndcg_at_K,0.0,0.0,0.0,True
+block_a_metrics,codex-m/cardinality/10310,degree,auroc,0.08548783847886539,0.08548783847886539,0.0,True
+block_a_metrics,codex-m/cardinality/10310,TransE,ndcg_at_K,0.053310994769320975,0.053310994769320975,0.0,True
+block_a_metrics,codex-m/cardinality/10310,TransE,auroc,0.564745578080573,0.564745578080573,0.0,True
+block_a_metrics,codex-m/cardinality/10310,DistMult,ndcg_at_K,0.0,0.0,0.0,True
+block_a_metrics,codex-m/cardinality/10310,DistMult,auroc,0.23393494729486755,0.23393494729486755,0.0,True
+block_a_metrics,codex-m/cardinality/10310,MuRE,ndcg_at_K,0.005691230800643314,0.005691230800643314,0.0,True
+block_a_metrics,codex-m/cardinality/10310,MuRE,auroc,0.6315062410110598,0.6315062410110598,0.0,True
+block_a_metrics,codex-m/cardinality/10310,"Fusion(A2,TransE)",ndcg_at_K,0.042951307505077106,0.042951307505077106,0.0,True
+block_a_metrics,codex-m/cardinality/10310,"Fusion(A2,TransE)",auroc,0.5479526520154636,0.5479526520154636,0.0,True
+block_a_metrics,codex-m/cardinality/10310,"Fusion(degree,TransE)",ndcg_at_K,0.005466512056022835,0.005466512056022835,0.0,True
+block_a_metrics,codex-m/cardinality/10310,"Fusion(degree,TransE)",auroc,0.21915686937288797,0.21915686937288797,0.0,True
+block_a_metrics,codex-m/cardinality/30930,A2,ndcg_at_K,0.12271479649181886,0.12271479649181886,0.0,True
+block_a_metrics,codex-m/cardinality/30930,A2,auroc,0.511762921219574,0.511762921219574,0.0,True
+block_a_metrics,codex-m/cardinality/30930,A1,ndcg_at_K,0.12271479649181886,0.12271479649181886,0.0,True
+block_a_metrics,codex-m/cardinality/30930,A1,auroc,0.511762921219574,0.511762921219574,0.0,True
+block_a_metrics,codex-m/cardinality/30930,degree,ndcg_at_K,0.0015143683042342295,0.0015143683042342295,0.0,True
+block_a_metrics,codex-m/cardinality/30930,degree,auroc,0.0912256277242806,0.0912256277242806,0.0,True
+block_a_metrics,codex-m/cardinality/30930,TransE,ndcg_at_K,0.15563153704953916,0.15563153704953916,0.0,True
+block_a_metrics,codex-m/cardinality/30930,TransE,auroc,0.5685497991637336,0.5685497991637336,0.0,True
+block_a_metrics,codex-m/cardinality/30930,DistMult,ndcg_at_K,0.0,0.0,0.0,True
+block_a_metrics,codex-m/cardinality/30930,DistMult,auroc,0.1753173923077047,0.1753173923077047,0.0,True
+block_a_metrics,codex-m/cardinality/30930,MuRE,ndcg_at_K,0.14153366054111519,0.14153366054111519,0.0,True
+block_a_metrics,codex-m/cardinality/30930,MuRE,auroc,0.6565330689943986,0.6565330689943986,0.0,True
+block_a_metrics,codex-m/cardinality/30930,"Fusion(A2,TransE)",ndcg_at_K,0.13955950988491903,0.13955950988491903,0.0,True
+block_a_metrics,codex-m/cardinality/30930,"Fusion(A2,TransE)",auroc,0.5551592186186274,0.5551592186186274,0.0,True
+block_a_metrics,codex-m/cardinality/30930,"Fusion(degree,TransE)",ndcg_at_K,0.008853025695290367,0.008853025695290367,0.0,True
+block_a_metrics,codex-m/cardinality/30930,"Fusion(degree,TransE)",auroc,0.22807962726273645,0.22807962726273645,0.0,True
+block_a_metrics,codex-m/transitivity/10310,A2,ndcg_at_K,0.0,0.0,0.0,True
+block_a_metrics,codex-m/transitivity/10310,A2,auroc,0.0942593795428536,0.0942593795428536,0.0,True
+block_a_metrics,codex-m/transitivity/10310,A1,ndcg_at_K,0.0,0.0,0.0,True
+block_a_metrics,codex-m/transitivity/10310,A1,auroc,0.0942593795428536,0.0942593795428536,0.0,True
+block_a_metrics,codex-m/transitivity/10310,degree,ndcg_at_K,0.0,0.0,0.0,True
+block_a_metrics,codex-m/transitivity/10310,degree,auroc,0.2532234929324797,0.2532234929324797,0.0,True
+block_a_metrics,codex-m/transitivity/10310,TransE,ndcg_at_K,0.0,0.0,0.0,True
+block_a_metrics,codex-m/transitivity/10310,TransE,auroc,0.20621075747734371,0.20621075747734371,0.0,True
+block_a_metrics,codex-m/transitivity/10310,DistMult,ndcg_at_K,0.0,0.0,0.0,True
+block_a_metrics,codex-m/transitivity/10310,DistMult,auroc,0.12182966812037982,0.12182966812037982,0.0,True
+block_a_metrics,codex-m/transitivity/10310,MuRE,ndcg_at_K,0.0,0.0,0.0,True
+block_a_metrics,codex-m/transitivity/10310,MuRE,auroc,0.13779538214097922,0.13779538214097922,0.0,True
+block_a_metrics,codex-m/transitivity/10310,"Fusion(A2,TransE)",ndcg_at_K,0.0,0.0,0.0,True
+block_a_metrics,codex-m/transitivity/10310,"Fusion(A2,TransE)",auroc,0.1411445284711268,0.1411445284711268,0.0,True
+block_a_metrics,codex-m/transitivity/10310,"Fusion(degree,TransE)",ndcg_at_K,0.0,0.0,0.0,True
+block_a_metrics,codex-m/transitivity/10310,"Fusion(degree,TransE)",auroc,0.17269126380254243,0.17269126380254243,0.0,True
+r2_2_regions,WN18RR/asymmetry/13950,A2 vs TransE,a2_only_n,1054,1054,0.0,True
+r2_2_regions,WN18RR/asymmetry/13950,A2 vs TransE,a2_only_tp,209,209,0.0,True
+r2_2_regions,WN18RR/asymmetry/13950,A2 vs TransE,shared_tp,117,117,0.0,True
+r2_2_regions,WN18RR/asymmetry/13950,A2 vs TransE,kge_only_tp,250,250,0.0,True
+r2_2_regions,WN18RR/asymmetry/13950,A2 vs TransE,a2_only_enrichment,1.5253247701065538,1.5253247701065538,0.0,True
+r2_2_regions,WN18RR/asymmetry/13950,A2 vs TransE,kge_only_enrichment,1.824551160414538,1.824551160414538,0.0,True
+r2_2_regions,WN18RR/asymmetry/13950,A2 vs DistMult,a2_only_n,1098,1098,0.0,True
+r2_2_regions,WN18RR/asymmetry/13950,A2 vs DistMult,a2_only_tp,260,260,0.0,True
+r2_2_regions,WN18RR/asymmetry/13950,A2 vs DistMult,shared_tp,66,66,0.0,True
+r2_2_regions,WN18RR/asymmetry/13950,A2 vs DistMult,kge_only_tp,122,122,0.0,True
+r2_2_regions,WN18RR/asymmetry/13950,A2 vs DistMult,a2_only_enrichment,1.8214936247723132,1.8214936247723132,0.0,True
+r2_2_regions,WN18RR/asymmetry/13950,A2 vs DistMult,kge_only_enrichment,0.8547008547008547,0.8547008547008547,0.0,True
+r2_2_regions,WN18RR/asymmetry/13950,A2 vs MuRE,a2_only_n,1135,1135,0.0,True
+r2_2_regions,WN18RR/asymmetry/13950,A2 vs MuRE,a2_only_tp,261,261,0.0,True
+r2_2_regions,WN18RR/asymmetry/13950,A2 vs MuRE,shared_tp,65,65,0.0,True
+r2_2_regions,WN18RR/asymmetry/13950,A2 vs MuRE,kge_only_tp,201,201,0.0,True
+r2_2_regions,WN18RR/asymmetry/13950,A2 vs MuRE,a2_only_enrichment,1.768891901050491,1.768891901050491,0.0,True
+r2_2_regions,WN18RR/asymmetry/13950,A2 vs MuRE,kge_only_enrichment,1.362250084717045,1.362250084717045,0.0,True
